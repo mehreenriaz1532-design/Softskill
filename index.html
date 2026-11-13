@@ -3,79 +3,115 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Rahnuma – Learn. Lead.</title>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<title>softskill – Learn. Lead.</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
-:root{--k:#000;--w:#fff;--g:#6b6b6b;--l:#d9d9d9;--f:#f4f4f4}
+:root{--bg:#F4F4F5;--s:#fff;--k:#0A0A0A;--g:#71717A;--l:rgba(10,10,10,.09);--sh:0 1px 2px rgba(0,0,0,.04),0 10px 28px -10px rgba(0,0,0,.14)}
 *{box-sizing:border-box}
-body{margin:0;background:var(--w);color:var(--k);font:400 16px/1.55 "Instrument Sans",system-ui,sans-serif}
-h1,h2,h3{font-family:"Instrument Serif",Georgia,serif;font-weight:400;margin:0;line-height:1.05}
+html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+body{margin:0;color:var(--k);font:400 15.5px/1.6 "Plus Jakarta Sans",system-ui,sans-serif;background:radial-gradient(60% 40% at 88% -5%,#fff 0,transparent 70%),radial-gradient(50% 40% at 0% 100%,#e8e8ea 0,transparent 70%),var(--bg);background-attachment:fixed;min-height:100vh}
+h1,h2,h3{font-weight:700;letter-spacing:-.03em;line-height:1.12;margin:0}
+h2{font-size:clamp(22px,2.6vw,28px)}
 a{color:inherit}button,input,select,textarea{font:inherit}
-:focus-visible{outline:3px solid var(--k);outline-offset:2px}
-.nav{background:var(--k);color:var(--w);display:flex;align-items:center;gap:20px;padding:0 24px;height:60px;position:sticky;top:0;z-index:5}
-.nav .logo{font:400 26px "Instrument Serif",serif;text-decoration:none;margin-right:auto}
-.nav nav{display:flex;gap:18px;align-items:center}
-.nav a,.nav button.lnk{color:var(--w);text-decoration:none;background:none;border:0;cursor:pointer;font-size:15px}
-.nav a:hover,.nav button.lnk:hover{text-decoration:underline}
-.wrap{max-width:1040px;margin:0 auto;padding:0 24px}
-.btn{display:inline-block;border:1.5px solid var(--k);background:var(--k);color:var(--w);padding:10px 20px;cursor:pointer;text-decoration:none;font-weight:500}
-.btn.o{background:var(--w);color:var(--k)}.btn.inv{background:var(--w);color:var(--k);border-color:var(--w);padding:7px 16px}
-.btn.s{padding:6px 12px;font-size:14px}.btn:disabled{opacity:.4;cursor:wait}
-.hero{padding:72px 0 56px;border-bottom:1.5px solid var(--k)}
-.hero h1{font-size:clamp(44px,8vw,96px);max-width:12ch}
-.hero p{max-width:56ch;font-size:19px;color:var(--g);margin:18px 0 28px}
-.three{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1.5px solid var(--k)}
-.three div{padding:28px 24px 28px 0;border-right:1px solid var(--l)}.three div:last-child{border:0}
-.three h3{font-size:26px;margin-bottom:6px}.three p{margin:0;color:var(--g)}
-section{padding:44px 0}
-h2{font-size:clamp(30px,4.5vw,46px);margin-bottom:6px}
-.sub{color:var(--g);margin:0 0 22px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:0;border:1.5px solid var(--k)}
-.card{padding:22px;border-right:1.5px solid var(--k);border-bottom:1.5px solid var(--k);margin:0 -1.5px -1.5px 0;display:flex;flex-direction:column;gap:10px;min-height:210px}
-.card h3{font-size:27px}.card p{margin:0;color:var(--g);flex:1;font-size:15px}
-.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.tag{border:1px solid var(--k);padding:1px 9px;font-size:12.5px;font-weight:500}
-.tag.k{background:var(--k);color:var(--w)}.tag.d{border-style:dashed;color:var(--g);border-color:var(--g)}
-.auth{max-width:420px;margin:56px auto;padding:0 24px}
-.auth h1{font-size:46px;margin-bottom:18px}
-label{display:block;font-weight:600;font-size:14px;margin:14px 0 4px}
-input,select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--k);background:var(--w);border-radius:0}
-.err{color:#000;font-weight:600;min-height:20px;margin:10px 0 0;font-size:14px}
-.ok{background:var(--f);border:1.5px solid var(--k);padding:12px;margin-top:12px}
+:focus-visible{outline:2px solid var(--k);outline-offset:2px}
+.nav{position:sticky;top:12px;z-index:20;margin:12px auto 0;max-width:1180px;width:calc(100% - 24px);height:58px;padding:0 10px 0 24px;display:flex;align-items:center;gap:8px;border-radius:999px;background:rgba(10,10,10,.82);-webkit-backdrop-filter:blur(16px) saturate(1.5);backdrop-filter:blur(16px) saturate(1.5);color:#fff;box-shadow:0 14px 34px -12px rgba(0,0,0,.5)}
+.nav .logo{font-weight:800;font-size:21px;letter-spacing:-.045em;text-decoration:none;margin-right:auto;display:flex;align-items:center}
+.nav .logo span,.flogo span{color:#a1a1aa;font-weight:600}
+.nav .logo:after,.flogo:after{content:"";width:7px;height:7px;border-radius:50%;background:#fff;margin:6px 0 0 3px}
+.nav nav{display:flex;gap:2px;align-items:center}
+.nav a,.nav button.lnk{color:#d4d4d8;text-decoration:none;background:none;border:0;cursor:pointer;font-size:14px;font-weight:500;padding:8px 15px;border-radius:999px;transition:background .15s,color .15s}
+.nav nav a:hover,.nav button.lnk:hover{background:rgba(255,255,255,.14);color:#fff}
+.btn{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--k);background:var(--k);color:#fff;padding:11px 22px;border-radius:999px;font-weight:600;cursor:pointer;text-decoration:none;transition:transform .15s,box-shadow .15s,background .15s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 10px 20px -8px rgba(0,0,0,.45)}
+.btn.o{background:#fff;color:var(--k);border-color:var(--l)}.btn.o:hover{border-color:rgba(0,0,0,.3)}
+.btn.s{padding:7px 15px;font-size:13.5px}.btn:disabled{opacity:.45;cursor:wait;transform:none;box-shadow:none}
+.split{display:grid;grid-template-columns:1.05fr 1fr;gap:12px;max-width:1180px;margin:12px auto;padding:0 12px;min-height:calc(100vh - 96px)}
+.brand{position:relative;overflow:hidden;border-radius:28px;padding:44px;color:#fff;display:flex;flex-direction:column;justify-content:space-between;background:radial-gradient(110% 90% at 0% 0%,#52525b 0,#0A0A0A 58%)}
+.brand:before,.brand:after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.1);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18)}
+.brand:before{width:300px;height:300px;right:-80px;top:-60px}.brand:after{width:180px;height:180px;right:90px;bottom:-60px}
+.brand>*{position:relative;z-index:1}
+.brand h1{font-size:clamp(40px,5vw,66px);margin:16px 0 14px}.brand p{color:#a1a1aa;max-width:36ch;font-size:17px;margin:0}
+.pills{display:flex;gap:8px;flex-wrap:wrap}.pills span{padding:7px 16px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);font-size:13.5px;font-weight:500}
+.eyebrow{display:inline-block;padding:5px 14px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.auth{align-self:center;width:100%;max-width:440px;margin:0 auto;padding:38px;background:rgba(255,255,255,.72);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border:1px solid #fff;border-radius:28px;box-shadow:var(--sh)}
+.auth h1{font-size:34px;margin-bottom:6px}
+label{display:block;font-weight:600;font-size:13.5px;margin:16px 0 6px}
+input,select,textarea{width:100%;padding:12px 14px;border:1px solid var(--l);background:#fff;border-radius:12px;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--k);box-shadow:0 0 0 4px rgba(10,10,10,.08)}
+input[type=checkbox]{width:auto}
+.err{color:#b42318;font-weight:600;min-height:20px;margin:10px 0 0;font-size:13.5px}
+.ok{background:#fff;border:1px solid var(--l);border-radius:16px;padding:16px 18px;margin-top:14px;box-shadow:var(--sh)}
 .hint{color:var(--g);font-size:13.5px}
-.dash{display:grid;grid-template-columns:210px 1fr;min-height:calc(100vh - 60px)}
-.side{border-right:1.5px solid var(--k);padding:24px 0;background:var(--f)}
-.side a{display:block;padding:9px 24px;text-decoration:none}.side a.on{background:var(--k);color:var(--w)}
-.body{padding:32px 28px 60px;min-width:0}
-.tabs{display:flex;border-bottom:1.5px solid var(--k);margin:18px 0 0;overflow-x:auto}
-.tabs button{background:none;border:0;border-bottom:4px solid transparent;padding:10px 18px;cursor:pointer;font-weight:500;white-space:nowrap;margin-bottom:-1.5px}
-.tabs button[aria-selected=true]{border-bottom-color:var(--k)}
-.bar{height:8px;border:1.5px solid var(--k);margin:10px 0 4px;max-width:320px}.bar i{display:block;height:100%;background:var(--k)}
-.item{display:flex;align-items:center;gap:14px;padding:16px 0;border-bottom:1px solid var(--l)}
+.dash{display:grid;grid-template-columns:220px 1fr;gap:18px;max-width:1180px;margin:18px auto 0;padding:0 12px 60px;align-items:start}
+.side{position:sticky;top:84px;padding:8px;border-radius:20px;background:rgba(255,255,255,.7);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid #fff;box-shadow:var(--sh)}
+.side a{display:block;padding:10px 16px;text-decoration:none;border-radius:12px;font-weight:500;font-size:14.5px;color:#3f3f46;transition:background .15s}
+.side a:hover{background:rgba(0,0,0,.05)}.side a.on{background:var(--k);color:#fff}
+.body{min-width:0}
+.banner{position:relative;overflow:hidden;color:#fff;border-radius:26px;padding:34px;display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;background:radial-gradient(120% 150% at 0% 0%,#52525b 0,#0A0A0A 60%);box-shadow:var(--sh);margin-bottom:30px}
+.banner:after{content:"";position:absolute;width:260px;height:260px;right:-70px;top:-90px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16)}
+.banner>*{position:relative;z-index:1}
+.banner h1{font-size:clamp(28px,4vw,42px);margin:14px 0 8px}.banner p{margin:0;color:#a1a1aa;max-width:50ch}
+.bstats{display:flex;gap:10px}.bstats div{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-radius:18px;padding:12px 20px;min-width:112px}
+.bstats b{display:block;font-size:20px;font-weight:800;line-height:1.1}.bstats span{font-size:12.5px;color:#d4d4d8}
+.sub{color:var(--g);margin:6px 0 18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.card{display:flex;flex-direction:column;gap:10px;padding:0 0 20px;background:#fff;border:1px solid var(--l);border-radius:22px;box-shadow:var(--sh);transition:transform .2s,box-shadow .2s}
+.card:hover{transform:translateY(-3px);box-shadow:0 18px 36px -14px rgba(0,0,0,.25)}
+.card>*{margin:0 20px}.card>.cover{margin:8px 8px 4px}.card>:first-child:not(.cover){margin-top:20px}
+.card h3{font-size:20px}.card p{color:var(--g);flex:1;font-size:14.5px}
+.cover{height:112px;border-radius:16px;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:12px 16px}
+.cover:after{content:"";position:absolute;width:120px;height:120px;right:-30px;top:-40px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2)}
+.cover span{font-size:44px;font-weight:800;letter-spacing:-.05em;color:rgba(255,255,255,.92);line-height:1}
+.c0{background:linear-gradient(135deg,#18181b,#52525b)}.c1{background:linear-gradient(135deg,#0a0a0a,#3f3f46 60%,#a1a1aa)}.c2{background:linear-gradient(135deg,#27272a,#000)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.tag{display:inline-block;padding:3px 11px;border-radius:999px;font-size:12px;font-weight:600;background:#f4f4f5;border:1px solid var(--l);white-space:nowrap}
+.tag.k{background:var(--k);color:#fff;border-color:var(--k)}.tag.d{color:var(--g);background:#fafafa}
+.tabs{display:inline-flex;gap:4px;background:#e7e7ea;padding:4px;border-radius:999px;margin:22px 0 4px;overflow-x:auto;max-width:100%}
+.tabs button{background:none;border:0;padding:8px 18px;border-radius:999px;cursor:pointer;font-weight:600;font-size:14px;color:#52525b;white-space:nowrap}
+.tabs button[aria-selected=true]{background:#fff;color:var(--k);box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.bar{height:8px;background:#e4e4e7;border-radius:999px;overflow:hidden;margin:16px 0 6px;max-width:360px}.bar i{display:block;height:100%;background:var(--k);border-radius:999px}
+.item{display:flex;align-items:center;gap:14px;padding:14px 18px;background:#fff;border:1px solid var(--l);border-radius:18px;margin-top:10px;box-shadow:var(--sh)}
 .item .t{flex:1;min-width:0}.item b{display:block;font-weight:600}
-.chk{width:20px;height:20px;border:1.5px solid var(--k);background:var(--w);cursor:pointer;flex:none;font-size:14px;line-height:1}
-.chk.on{background:var(--k);color:var(--w)}
-table{width:100%;border-collapse:collapse;font-size:14.5px}
-th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--l);vertical-align:top}
-th{border-bottom:1.5px solid var(--k);font-size:13px}
-.scroll{overflow-x:auto}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1.5px solid var(--k);margin:18px 0}
-.stats div{padding:14px 16px;border-right:1px solid var(--l)}.stats b{display:block;font:400 34px "Instrument Serif",serif}
-.empty{border:1.5px dashed var(--g);padding:26px;color:var(--g);text-align:center}
-dialog{border:1.5px solid var(--k);padding:0;width:min(540px,94vw);max-height:92vh;border-radius:0}
-dialog::backdrop{background:rgba(0,0,0,.65)}
-.dlg{padding:24px}.dlg h2{font-size:34px}
-.acct{border:1.5px solid var(--k);padding:10px 12px;margin:8px 0;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.chk{width:26px;height:26px;border:1.5px solid #a1a1aa;background:#fff;border-radius:50%;cursor:pointer;flex:none;font-size:14px;line-height:1;color:#fff;transition:background .15s}
+.chk.on{background:var(--k);border-color:var(--k)}
+.scroll{overflow-x:auto;background:#fff;border:1px solid var(--l);border-radius:20px;box-shadow:var(--sh)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:13px 16px;border-bottom:1px solid var(--l);vertical-align:top}
+th{font-size:12px;font-weight:600;color:var(--g);text-transform:uppercase;letter-spacing:.05em;background:#fafafa}
+tr:last-child td{border-bottom:0}tbody tr:hover td{background:#fcfcfc}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:18px 0}
+.stats div{background:#fff;border:1px solid var(--l);border-radius:20px;padding:16px 20px;box-shadow:var(--sh);color:var(--g);font-size:13.5px}
+.stats b{display:block;font-size:22px;font-weight:800;color:var(--k);letter-spacing:-.03em}
+.empty{background:rgba(255,255,255,.6);border:1.5px dashed #c4c4ca;border-radius:20px;padding:30px;color:var(--g);text-align:center}
+dialog{border:0;padding:0;width:min(540px,94vw);max-height:92vh;border-radius:26px;box-shadow:0 30px 80px -20px rgba(0,0,0,.5)}
+dialog::backdrop{background:rgba(10,10,10,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.dlg{padding:28px}.dlg h2{font-size:26px}
+.acct{border:1px solid var(--l);border-radius:16px;padding:12px 16px;margin:10px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;background:#fafafa}
 .acct small{display:block;color:var(--g)}
-.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--k);color:var(--w);padding:10px 18px;z-index:30;font-weight:500}
-.load{padding:60px;text-align:center;color:var(--g)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--k);color:#fff;padding:12px 22px;border-radius:999px;z-index:30;font-weight:600;font-size:14px;box-shadow:0 14px 30px -10px rgba(0,0,0,.5)}
+.load{padding:80px;text-align:center;color:var(--g)}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
-@media(max-width:760px){.three{grid-template-columns:1fr}.three div{border:0;border-bottom:1px solid var(--l)}.dash{grid-template-columns:1fr}.side{display:flex;overflow-x:auto;padding:0;border-right:0;border-bottom:1.5px solid var(--k)}.side a{white-space:nowrap}.two{grid-template-columns:1fr}.nav{padding:0 14px}}
+.foot{max-width:1180px;width:calc(100% - 24px);margin:44px auto 20px;border-radius:28px;color:#fff;padding:32px 34px 20px;background:radial-gradient(110% 160% at 0% 0%,#3f3f46 0,#0A0A0A 60%);box-shadow:var(--sh)}
+.foot-in{display:flex;justify-content:space-between;align-items:flex-end;gap:28px;flex-wrap:wrap}
+.flogo{display:flex;align-items:center;font-weight:800;font-size:28px;letter-spacing:-.045em}
+.foot-brand p{margin:8px 0 0;color:#a1a1aa}
+.foot-dev{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.foot-dev b{font-size:20px;letter-spacing:-.02em}.fsmall{font-size:13px;color:#a1a1aa}
+.foot-dev .btn{margin-top:10px}
+.foot-bot{margin-top:24px;padding-top:16px;border-top:1px solid rgba(255,255,255,.14);color:#a1a1aa;font-size:13px}
+@media(max-width:860px){.split{grid-template-columns:1fr;min-height:0}.brand{display:none}.dash{grid-template-columns:1fr}.side{position:static;display:flex;overflow-x:auto;gap:4px}.side a{white-space:nowrap}.two{grid-template-columns:1fr}.banner{padding:26px}.auth{padding:28px}}
 </style>
 </head>
 <body>
 <div id="nav"></div><div id="main"><div class="load">Loading…</div></div>
+<footer class="foot">
+  <div class="foot-in">
+    <div class="foot-brand"><span class="flogo">soft<span>skill</span></span><p>Learn skills. Lead with confidence.</p></div>
+    <div class="foot-dev"><span class="fsmall">Developed by</span><b>Mehreen Riaz</b><span class="fsmall">Need a website? Get in touch.</span><a class="btn o s" href="mailto:mehreenriaz1532@gmail.com?subject=Website%20inquiry">mehreenriaz1532@gmail.com</a></div>
+  </div>
+  <div class="foot-bot">© <span id="yr"></span> softskill. All rights reserved.</div>
+</footer>
 <dialog id="dlg"><div class="dlg" id="dbody"></div></dialog>
 <div id="toast" class="toast" hidden></div>
 <script>
@@ -101,7 +137,7 @@ async function boot(){
 }
 addEventListener("hashchange",()=>sb&&go());
 
-function nav(){return `<div class="nav"><a class="logo" href="${me?"#/app":"#/signin"}">Rahnuma</a><nav>`+
+function nav(){return `<div class="nav"><a class="logo" href="${me?"#/app":"#/signin"}">soft<span>skill</span></a><nav>`+
  (me?`<a href="#/app">My learning</a><a href="#/live">Live classes</a>${prof?.is_admin?'<a href="#/admin">Admin</a>':""}<button class="lnk" data-act="out">Sign out</button>`:"")+`</nav></div>`}
 
 async function go(){
@@ -135,7 +171,7 @@ function authV(k){
    signup:["Create account",`<label>Full name</label><input name="name" required><div class="two"><div><label>City</label><input name="city"></div><div><label>University</label><input name="uni"></div></div><label>Email</label><input name="email" type="email" required autocomplete="email"><label>Password (8+ characters)</label><input name="password" type="password" minlength="8" required autocomplete="new-password">`,"Sign up",`<p class="hint">Already have an account? <a href="#/signin">Sign in</a></p>`],
    forgot:["Reset password",`<p class="hint">Enter your email and we will send you a reset link.</p><label>Email</label><input name="email" type="email" required>`,"Send reset link",`<p class="hint"><a href="#/signin">Back to sign in</a></p>`],
    reset:["New password",`<label>New password (8+ characters)</label><input name="password" type="password" minlength="8" required autocomplete="new-password">`,"Save password",""]}[k];
-  return `<div class="auth"><h1>${f[0]}</h1><form data-form="${k}">${f[1]}<div class="err" role="alert"></div><button class="btn" style="width:100%;margin-top:12px">${f[2]}</button></form>${f[3]}</div>`}
+  return `<div class="split"><div class="brand"><div><span class="eyebrow">softskill</span><h1>Learn it.<br>Lead it.</h1><p>Career skills, live masterclasses and a capstone project, built for students in Pakistan.</p></div><div class="pills"><span>Modules</span><span>Live classes</span><span>Notes</span><span>Links</span></div></div><div class="auth"><h1>${f[0]}</h1><form data-form="${k}">${f[1]}<div class="err" role="alert"></div><button class="btn" style="width:100%;margin-top:14px">${f[2]}</button></form><div style="margin-top:14px">${f[3]}</div></div></div>`}
 
 const approvedFor=(c,pays)=>prof?.is_admin||c.price==0||pays.some(p=>p.status==="approved"&&(p.course_id===c.id||p.courses?.is_bundle));
 const stat=s=>s==="approved"?'<span class="tag k">Approved</span>':s==="rejected"?'<span class="tag d">Rejected</span>':'<span class="tag">Pending verification</span>';
@@ -144,8 +180,8 @@ const myPays=()=>q(sb.from("payments").select("*,courses(title,is_bundle)").eq("
 async function dash(){
   const [cs,pays]=await Promise.all([q(sb.from("courses").select("*").order("position")),myPays()]);
   return `<div class="dash"><aside class="side"><a class="on" href="#/app">My learning</a><a href="#/live">Live classes</a></aside><div class="body">
-  <h2>Hello, ${esc(prof?.full_name||"student")}</h2><p class="sub">Pick a course to see its modules, live classes, notes and links.</p>
-  <div class="grid">${cs.map(c=>{const ok=approvedFor(c,pays);return `<div class="card"><div class="row"><span class="tag ${ok?"k":"d"}">${ok?(c.price?"Unlocked":"Free"):"Locked"}</span><b>${pkr(c.price)}</b></div><h3>${esc(c.title)}</h3><p>${esc(c.description)}</p>
+  <div class="banner"><div><span class="eyebrow">Welcome back</span><h1>Hello, ${esc((prof?.full_name||me.email.split("@")[0]).split(" ")[0])}</h1><p>Pick a course to see its modules, live classes, notes and links.</p></div><div class="bstats"><div><b>${cs.filter(c=>approvedFor(c,pays)).length}</b><span>Courses open</span></div><div><b>${pays.filter(p=>p.status==="pending").length}</b><span>Pending payments</span></div></div></div><h2 style="margin-bottom:14px">Your courses</h2>
+  <div class="grid">${cs.map((c,i)=>{const ok=approvedFor(c,pays);return `<div class="card"><div class="cover c${i%3}"><span>${String(i+1).padStart(2,"0")}</span></div><div class="row"><span class="tag ${ok?"k":"d"}">${ok?(c.price?"Unlocked":"Free"):"Locked"}</span><b>${pkr(c.price)}</b></div><h3>${esc(c.title)}</h3><p>${esc(c.description)}</p>
   <div><a class="btn s" href="#/course/${c.id}">Open</a> ${ok?"":`<button class="btn s o" data-act="unlock" data-id="${c.id}">Unlock</button>`}</div></div>`}).join("")}</div>
   <h2 style="margin-top:44px">Payments</h2><p class="sub">Approved payments unlock content automatically.</p>
   ${pays.length?`<div class="scroll"><table><tr><th>Course</th><th>Method</th><th>TID</th><th>Status</th><th></th></tr>${pays.map(p=>`<tr><td>${esc(p.courses?.title)}</td><td>${p.method}</td><td>${esc(p.tid)}</td><td>${stat(p.status)}${p.status==="rejected"?`<div class="hint">${esc(p.reason)}</div>`:""}</td><td>${p.status==="rejected"?`<button class="btn s o" data-act="unlock" data-id="${p.course_id}">Submit again</button>`:""}</td></tr>`).join("")}</table></div>`:'<div class="empty">No payments yet.</div>'}
@@ -162,7 +198,7 @@ async function course(id){
   const list=ls.filter(l=>l.kind===T.c);
   const open=l=>l.is_free||ok;
   return `<div class="dash"><aside class="side"><a href="#/app">My learning</a><a class="on" href="#/course/${id}">${esc(c.title)}</a></aside><div class="body">
-  <h2>${esc(c.title)}</h2><p class="sub" style="margin-bottom:0">${esc(c.description)}</p>
+  <div class="banner"><div><span class="eyebrow">Course</span><h1>${esc(c.title)}</h1><p>${esc(c.description)}</p></div></div>
   ${mods.length?`<div class="bar"><i style="width:${pct}%"></i></div><div class="hint">${pct}% of modules complete</div>`:""}
   ${ok?"":`<div class="ok">Some content is locked. <button class="btn s" data-act="unlock" data-id="${id}">Unlock for ${pkr(c.price)}</button></div>`}
   <div class="tabs" role="tablist">${Object.keys(KIND).map(k=>`<button role="tab" aria-selected="${k===T.c}" data-act="tab" data-v="${k}">${KIND[k][0]} (${ls.filter(l=>l.kind===k).length})</button>`).join("")}</div>
@@ -182,17 +218,17 @@ async function api(path,body,code){
 const rowBtns=(t,id)=>`<button class="btn s o" data-act="edit" data-t="${t}" data-id="${id}">Edit</button> <button class="btn s o" data-act="del" data-t="${t}" data-id="${id}">Delete</button>`;
 const aiCell=p=>p.payment_ai?`<span class="tag ${p.payment_ai.verdict==="pass"?"k":"d"}">AI: ${p.payment_ai.verdict==="pass"?"verified":"needs review"}</span><div class="hint">${esc(p.payment_ai.note)}</div>`:'<span class="hint">Not checked</span>';
 function gate(){return `<div class="auth"><h1>Admin access</h1><p class="hint">Enter the admin code to continue.</p><form data-form="unlock"><label>Admin code</label><input name="code" type="password" required autocomplete="off"><div class="err" role="alert"></div><button class="btn" style="width:100%;margin-top:12px">Unlock</button></form></div>`}
-const aiBox=cs=>`<div class="ok" style="margin:18px 0"><h3 style="font-size:28px">AI: arrange course content</h3><p class="hint">Paste raw notes, links or a lesson list. AI sorts it into modules, notes and links. You review before anything is saved.</p><form data-form="aicourse"><label>Course</label><select name="course_id">${cs.map(c=>`<option value="${c.id}">${esc(c.title)}</option>`).join("")}</select><label>Raw content</label><textarea name="text" rows="6" required></textarea><div class="err"></div><button class="btn s" style="margin-top:10px">Arrange with AI</button></form><div id="plan"></div></div>`;
-function listC(cs,ls){return `<h3 style="font-size:30px;margin:38px 0 8px">Your courses</h3><div class="scroll"><table><tr><th>Course</th><th>Price</th><th></th></tr>${cs.map(c=>`<tr><td>${esc(c.title)}</td><td>${pkr(c.price)}</td><td>${rowBtns("courses",c.id)}</td></tr>`).join("")}</table></div>
-<h3 style="font-size:30px;margin:38px 0 8px">Modules, notes and links</h3>${ls.length?`<div class="scroll"><table><tr><th>Title</th><th>Course</th><th>Type</th><th></th></tr>${ls.map(l=>`<tr><td>${esc(l.title)}</td><td>${esc(l.courses?.title)}</td><td>${l.kind}${l.is_free?" · free":""}</td><td>${rowBtns("lessons",l.id)}</td></tr>`).join("")}</table></div>`:'<div class="empty">Nothing added yet.</div>'}`}
+const aiBox=cs=>`<div class="ok" style="margin:18px 0"><h3 style="font-size:20px">AI: arrange course content</h3><p class="hint">Paste raw notes, links or a lesson list. AI sorts it into modules, notes and links. You review before anything is saved.</p><form data-form="aicourse"><label>Course</label><select name="course_id">${cs.map(c=>`<option value="${c.id}">${esc(c.title)}</option>`).join("")}</select><label>Raw content</label><textarea name="text" rows="6" required></textarea><div class="err"></div><button class="btn s" style="margin-top:10px">Arrange with AI</button></form><div id="plan"></div></div>`;
+function listC(cs,ls){return `<h3 style="font-size:22px;margin:38px 0 8px">Your courses</h3><div class="scroll"><table><tr><th>Course</th><th>Price</th><th></th></tr>${cs.map(c=>`<tr><td>${esc(c.title)}</td><td>${pkr(c.price)}</td><td>${rowBtns("courses",c.id)}</td></tr>`).join("")}</table></div>
+<h3 style="font-size:22px;margin:38px 0 8px">Modules, notes and links</h3>${ls.length?`<div class="scroll"><table><tr><th>Title</th><th>Course</th><th>Type</th><th></th></tr>${ls.map(l=>`<tr><td>${esc(l.title)}</td><td>${esc(l.courses?.title)}</td><td>${l.kind}${l.is_free?" · free":""}</td><td>${rowBtns("lessons",l.id)}</td></tr>`).join("")}</table></div>`:'<div class="empty">Nothing added yet.</div>'}`}
 async function live(){
   const [ls,cs,pays]=await Promise.all([q(sb.from("live_classes").select("*").order("starts_at")),q(sb.from("courses").select("*")),myPays()]);
   const cm=Object.fromEntries(cs.map(c=>[c.id,c])),cut=Date.now()-72e5;
   const row=l=>{const c=cm[l.course_id],ok=!c||approvedFor(c,pays);return `<div class="item"><div class="t"><b>${esc(l.title)}</b><span class="hint">${when(l.starts_at)} · ${c?esc(c.title)+" students":"Open to everyone"}</span>${l.description?`<div class="hint">${esc(l.description)}</div>`:""}</div>${ok?`<button class="btn s" data-act="join" data-id="${l.id}">Join</button>`:`<button class="btn s o" data-act="unlock" data-id="${c.id}">Unlock</button>`}</div>`};
   const up=ls.filter(l=>new Date(l.starts_at)>=cut),old=ls.filter(l=>new Date(l.starts_at)<cut).reverse();
   return `<div class="dash"><aside class="side"><a href="#/app">My learning</a><a class="on" href="#/live">Live classes</a></aside><div class="body"><h2>Live classes</h2><p class="sub">Times are shown in your device time zone.</p>
-  <h3 style="font-size:28px">Upcoming</h3>${up.length?up.map(row).join(""):'<div class="empty">No upcoming classes yet.</div>'}
-  ${old.length?`<h3 style="font-size:28px;margin-top:34px">Earlier</h3>${old.map(row).join("")}`:""}</div></div>`}
+  <h3 style="font-size:20px">Upcoming</h3>${up.length?up.map(row).join(""):'<div class="empty">No upcoming classes yet.</div>'}
+  ${old.length?`<h3 style="font-size:20px;margin-top:34px">Earlier</h3>${old.map(row).join("")}`:""}</div></div>`}
 const EF={courses:[["title","Title"],["description","Description","ta"],["price","Price (PKR)","num"],["position","Position","num"],["is_bundle","Bundle: unlocks every course","chk"]],
 live_classes:[["title","Title"],["description","Description","ta"],["starts_at","Date and time","dt"],["course_id","Who can join","sel"],["url","Zoom or Meet link","url"]],
 lessons:[["title","Title"],["position","Position","num"],["is_free","Free preview","chk"],["url","Link or video URL","url"]]};
@@ -223,15 +259,15 @@ async function admin(){
   }else if(T.a==="live"){
     const [ls,cs]=await Promise.all([q(sb.from("live_classes").select("*,courses(title)").order("starts_at",{ascending:false})),q(sb.from("courses").select("id,title").order("position"))]);
     b=`<p class="sub" style="margin-top:18px">Every signed-in student sees these on the Live classes page. Zoom links stay hidden from anyone who has not unlocked the course.</p>
-    <div class="ok"><h3 style="font-size:28px">AI: paste the class message</h3><p class="hint">Example: "Digital AI masterclass tomorrow 8pm, https://zoom.us/j/123". AI fills the form below. You check it, then press Add.</p><form data-form="ailive"><textarea name="text" rows="3" required></textarea><div class="err"></div><button class="btn s" style="margin-top:10px">Fill form with AI</button></form></div>
-    <h3 style="font-size:30px;margin:26px 0 0">Add live class</h3><form data-form="addlive" style="max-width:520px"><label>Title</label><input name="title" required><label>Description (optional)</label><textarea name="desc" rows="2"></textarea><label>Date and time</label><input name="starts_at" type="datetime-local" required><label>Zoom or Meet link</label><input name="url" type="url" placeholder="https://zoom.us/j/..." required><label>Who can join</label><select name="course_id"><option value="">Everyone</option>${cs.map(c=>`<option value="${c.id}">${esc(c.title)} students</option>`).join("")}</select><div class="err"></div><button class="btn s" style="margin-top:12px">Add live class</button></form>
-    <h3 style="font-size:30px;margin:34px 0 8px">Scheduled</h3>${ls.length?`<div class="scroll"><table><tr><th>Class</th><th>When</th><th>Who</th><th></th></tr>${ls.map(l=>`<tr><td>${esc(l.title)}</td><td>${when(l.starts_at)}</td><td>${l.courses?esc(l.courses.title):"Everyone"}</td><td>${rowBtns("live_classes",l.id)}</td></tr>`).join("")}</table></div>`:'<div class="empty">No live classes yet.</div>'}`;
+    <div class="ok"><h3 style="font-size:20px">AI: paste the class message</h3><p class="hint">Example: "Digital AI masterclass tomorrow 8pm, https://zoom.us/j/123". AI fills the form below. You check it, then press Add.</p><form data-form="ailive"><textarea name="text" rows="3" required></textarea><div class="err"></div><button class="btn s" style="margin-top:10px">Fill form with AI</button></form></div>
+    <h3 style="font-size:22px;margin:26px 0 0">Add live class</h3><form data-form="addlive" style="max-width:520px"><label>Title</label><input name="title" required><label>Description (optional)</label><textarea name="desc" rows="2"></textarea><label>Date and time</label><input name="starts_at" type="datetime-local" required><label>Zoom or Meet link</label><input name="url" type="url" placeholder="https://zoom.us/j/..." required><label>Who can join</label><select name="course_id"><option value="">Everyone</option>${cs.map(c=>`<option value="${c.id}">${esc(c.title)} students</option>`).join("")}</select><div class="err"></div><button class="btn s" style="margin-top:12px">Add live class</button></form>
+    <h3 style="font-size:22px;margin:34px 0 8px">Scheduled</h3>${ls.length?`<div class="scroll"><table><tr><th>Class</th><th>When</th><th>Who</th><th></th></tr>${ls.map(l=>`<tr><td>${esc(l.title)}</td><td>${when(l.starts_at)}</td><td>${l.courses?esc(l.courses.title):"Everyone"}</td><td>${rowBtns("live_classes",l.id)}</td></tr>`).join("")}</table></div>`:'<div class="empty">No live classes yet.</div>'}`;
   }else if(T.a==="content"){
     const cs=await q(sb.from("courses").select("*").order("position"));
     const all=await q(sb.from("lessons").select("*,courses(title)").order("created_at",{ascending:false}));
     const opts=cs.map(c=>`<option value="${c.id}">${esc(c.title)}</option>`).join("");
-    b=`${aiBox(cs)}<h3 style="font-size:30px;margin:18px 0 0">Add course</h3><form data-form="addcourse" style="max-width:520px"><label>Title</label><input name="title" required><label>Description</label><textarea name="desc" rows="2"></textarea><div class="two"><div><label>Price (PKR, 0 = free)</label><input name="price" type="number" min="0" value="0"></div><div><label>Position</label><input name="pos" type="number" value="0"></div></div><label><input type="checkbox" name="bundle" style="width:auto"> Bundle (unlocks every course)</label><div class="err"></div><button class="btn s">Add course</button></form>
-    <h3 style="font-size:30px;margin:34px 0 0">Add module, class, note or link</h3><form data-form="addlesson" style="max-width:520px"><label>Course</label><select name="course_id">${opts}</select><div class="two"><div><label>Type</label><select name="kind"><option value="module">Module (video)</option><option value="class">Live class</option><option value="note">Note (PDF)</option><option value="link">Link</option></select></div><div><label>Position</label><input name="position" type="number" value="0"></div></div><label>Title</label><input name="title" required><label>Link (video, Zoom/Meet or website)</label><input name="url" type="url"><label>PDF file (for notes)</label><input name="file" type="file" accept="application/pdf"><label>Class date and time (live classes)</label><input name="starts_at" type="datetime-local"><label><input type="checkbox" name="is_free" style="width:auto"> Free preview</label><div class="err"></div><button class="btn s">Add</button></form>`+listC(cs,all);
+    b=`${aiBox(cs)}<h3 style="font-size:22px;margin:18px 0 0">Add course</h3><form data-form="addcourse" style="max-width:520px"><label>Title</label><input name="title" required><label>Description</label><textarea name="desc" rows="2"></textarea><div class="two"><div><label>Price (PKR, 0 = free)</label><input name="price" type="number" min="0" value="0"></div><div><label>Position</label><input name="pos" type="number" value="0"></div></div><label><input type="checkbox" name="bundle" style="width:auto"> Bundle (unlocks every course)</label><div class="err"></div><button class="btn s">Add course</button></form>
+    <h3 style="font-size:22px;margin:34px 0 0">Add module, class, note or link</h3><form data-form="addlesson" style="max-width:520px"><label>Course</label><select name="course_id">${opts}</select><div class="two"><div><label>Type</label><select name="kind"><option value="module">Module (video)</option><option value="class">Live class</option><option value="note">Note (PDF)</option><option value="link">Link</option></select></div><div><label>Position</label><input name="position" type="number" value="0"></div></div><label>Title</label><input name="title" required><label>Link (video, Zoom/Meet or website)</label><input name="url" type="url"><label>PDF file (for notes)</label><input name="file" type="file" accept="application/pdf"><label>Class date and time (live classes)</label><input name="starts_at" type="datetime-local"><label><input type="checkbox" name="is_free" style="width:auto"> Free preview</label><div class="err"></div><button class="btn s">Add</button></form>`+listC(cs,all);
   }else{
     const st=Object.fromEntries((await q(sb.from("settings").select("*"))).map(r=>[r.key,r.value]));
     const F=[["jc_number","JazzCash number"],["jc_title","JazzCash account title"],["ep_number","EasyPaisa number"],["ep_title","EasyPaisa account title"],["raast_id","Raast ID / IBAN"],["ai_auto_approve","AI auto-approve payments (on or off)"]];
@@ -336,6 +372,7 @@ const A={
   const{error}=await sb.from("payments").update({status:"rejected",reason:r||"Receipt could not be verified."}).eq("id",el.dataset.id);if(error)return toast(error.message);go()}
 };
 document.addEventListener("click",e=>{const el=e.target.closest("[data-act]");if(el&&A[el.dataset.act])A[el.dataset.act](el)});
+$("#yr").textContent=new Date().getFullYear();
 boot();
 </script>
 </body>
