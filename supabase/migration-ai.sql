@@ -11,7 +11,7 @@ create table payment_ai(
 alter table payment_ai enable row level security;
 create policy "admin read" on payment_ai for select to authenticated using (is_admin());
 
-insert into settings(key,value) values ('ai_auto_approve','on') on conflict do nothing;
+insert into settings(key,value) values ('ai_auto_approve','off') on conflict do nothing;
 
 -- indexes so the site stays fast with a few hundred students
 create index on lessons(course_id,kind,position);
