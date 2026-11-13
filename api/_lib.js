@@ -33,16 +33,21 @@ async function admin(req, res) {
   return u;
 }
 
-// Calls Claude and returns the first JSON object in the reply.
+// Calls Groq (OpenAI-compatible API) and returns the first JSON object in the reply.
+// content: a string, or an array of parts (text / image_url) for receipt images.
 async function ai(content, system, max = 1500) {
-  const r = await fetch('https://api.anthropic.com/v1/messages', {
+  const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
-    headers: { 'content-type': 'application/json', 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
-    body: JSON.stringify({ model: process.env.AI_MODEL || 'claude-sonnet-5-5', max_tokens: max, system, messages: [{ role: 'user', content }] })
+    headers: { 'content-type': 'application/json', authorization: 'Bearer ' + process.env.GROQ_API_KEY },
+    body: JSON.stringify({
+      model: process.env.GROQ_MODEL || 'qwen/qwen3.8-27b',
+      max_tokens: max + 2000, temperature: 0,
+      messages: [{ role: 'system', content: system }, { role: 'user', content }]
+    })
   });
   const j = await r.json();
   if (!r.ok) throw new Error(j.error?.message || 'AI request failed');
-  const txt = (j.content || []).map(c => c.text || '').join('');
+  const txt = String(j.choices?.[0]?.message?.content || '').replace(/<think>[\s\S]*?<\/think>/g, '');
   const m = txt.match(/\{[\s\S]*\}/);
   if (!m) throw new Error('AI returned no JSON');
   return JSON.parse(m[0]);
