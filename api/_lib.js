@@ -75,14 +75,13 @@ function cleanScenario(o) {
   return { start: nodes[o.start] ? o.start : ids[0], nodes };
 }
 
-const nodemailer = require('nodemailer');
 let tx;
 // Sends mail through your SMTP account (same Gmail app password you gave Supabase, or Brevo/Resend later).
 async function mail({ to, bcc, subject, html }) {
   if (!process.env.SMTP_HOST) return false;
   try {
     const port = +process.env.SMTP_PORT || 465;
-    tx = tx || nodemailer.createTransport({ host: process.env.SMTP_HOST, port, secure: port === 465, auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } });
+    tx = tx || require('nodemailer').createTransport({ host: process.env.SMTP_HOST, port, secure: port === 465, auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } });
     await tx.sendMail({ from: process.env.MAIL_FROM || `softskill <${process.env.SMTP_USER}>`, to, bcc, subject, html });
     return true;
   } catch (e) { console.error('mail failed:', e.message); return false; }
