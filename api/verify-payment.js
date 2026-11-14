@@ -1,4 +1,4 @@
-const { db, user, ai } = require('./_lib');
+const { db, user, ai, mail, wrap, esc, SITE } = require('./_lib');
 // Called by the student right after submitting a payment. The AI reads the receipt screenshot and checks it
 // against the expected amount, receiving number and transaction ID. Approval is decided by strict rules here,
 // not by the AI alone, and only on a pending payment that belongs to the caller.
@@ -31,6 +31,7 @@ module.exports = async (req, res) => {
     if (ok && s.ai_auto_approve !== 'off') {
       const { error: e2 } = await db.from('payments').update({ status: 'approved' }).eq('id', id).eq('status', 'pending');
       approved = !e2;
+      if (approved && u.email) await mail({ to: u.email, subject: 'Your payment is approved - softskill', html: wrap('Payment approved', `<p>Your payment for <b>${esc(p.courses.title)}</b> was verified. Your content is now unlocked.</p><p><a href="${SITE()}/#/app">Open softskill</a></p>`) });
     }
   } catch (e) { note = 'AI check unavailable. Please review manually.'; }
   await db.from('payment_ai').insert({ payment_id: id, verdict, note });
