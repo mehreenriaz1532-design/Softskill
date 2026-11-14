@@ -47,3 +47,7 @@ New Vercel variables for emails (payment decisions and daily live-class reminder
 `SMTP_HOST` (smtp.gmail.com), `SMTP_PORT` (465), `SMTP_USER` (your Gmail), `SMTP_PASS` (the Gmail app password), `SITE_URL` (your https website address, no trailing slash), `CRON_SECRET` (any long random text; Vercel uses it to call the reminder job).
 
 The policy pages in `public/lms.js` (terms, privacy, refund, FAQ) are templates. Read them and change the wording to match your real business before launch.
+
+## Admin controls (migration-admin.sql)
+Run `supabase/migration-admin.sql` once. It adds editable Help pages, manual access grants, certificate revoking and the Students overview.
+New admin tabs: Students, Moderation, Help pages.
