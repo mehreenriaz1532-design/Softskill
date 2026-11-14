@@ -1,9 +1,11 @@
-<!DOCTYPE html>
+nh<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0A0A0A">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icon-192.png">
 <title>softskill – Learn. Lead.</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -98,6 +100,8 @@ dialog::backdrop{background:rgba(10,10,10,.55);-webkit-backdrop-filter:blur(6px)
 .foot-brand{display:flex;align-items:center;gap:10px}
 .flogo{display:flex;align-items:center;font-weight:800;font-size:18px;letter-spacing:-.045em}
 .fsmall{font-size:12px;color:#a1a1aa}.fsmall b{color:#fff;font-size:13px;font-weight:700}
+.foot-links{display:flex;gap:6px 16px;flex-wrap:wrap;justify-content:center}.foot-links a{font-size:12.5px;color:#a1a1aa;text-decoration:none}.foot-links a:hover{color:#fff}
+.foot a.fsmall{text-decoration:none}.foot a.fsmall:hover b{text-decoration:underline}
 .foot-dev{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.foot .btn.s{padding:6px 14px;font-size:12.5px}
 @media(max-width:1024px){.dash{grid-template-columns:190px 1fr;gap:14px}.banner{padding:28px}}
 @media(max-width:860px){
@@ -133,11 +137,12 @@ th,td{padding:10px 12px}
 <div id="nav"></div><div id="main"><div class="load">Loading…</div></div>
 <footer class="foot">
   <div class="foot-brand"><span class="flogo">soft<span>skill</span></span><span class="fsmall">© <span id="yr"></span></span></div>
-  <div class="foot-dev"><span class="fsmall">Developed by <b>Mehreen Riaz</b></span><a class="btn o s" href="mailto:mehreenriaz1532@gmail.com?subject=Website%20inquiry" title="Need a website? Get in touch.">mehreenriaz1532@gmail.com</a></div>
+  <a class="foot-dev fsmall" href="mailto:mehreenriaz1532@gmail.com?subject=Website%20inquiry" title="Need a website? Get in touch.">Developed by <b>Mehreen Riaz</b></a>
 </footer>
 <dialog id="dlg"><div class="dlg" id="dbody"></div></dialog>
 <div id="toast" class="toast" hidden></div>
 <script src="/skills.js"></script>
+<script src="/lms.js"></script>
 <script>
 const $=s=>document.querySelector(s),main=$("#main"),dlg=$("#dlg");
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -194,11 +199,11 @@ async function landing(){
 
 function authV(k){
   const f={
-   signin:["Sign in",`<label>Email</label><input name="email" type="email" required autocomplete="email"><label>Password</label><input name="password" type="password" required autocomplete="current-password"><p class="hint"><a href="#/forgot">Forgot password?</a></p>`,"Sign in",`<p class="hint">New here? <a href="#/signup">Create an account</a></p>`],
-   signup:["Create account",`<label>Full name</label><input name="name" required><div class="two"><div><label>City</label><input name="city"></div><div><label>University</label><input name="uni"></div></div><label>Email</label><input name="email" type="email" required autocomplete="email"><label>Password (8+ characters)</label><input name="password" type="password" minlength="8" required autocomplete="new-password">`,"Sign up",`<p class="hint">Already have an account? <a href="#/signin">Sign in</a></p>`],
+   signin:["Sign in",`<label>Email</label><input name="email" type="email" required autocomplete="email"><label>Password</label><input name="password" type="password" required autocomplete="current-password"><p class="hint"><a href="#/forgot">Forgot password?</a></p>`,"Sign in",`<p class="hint">New here? <a href="#/signup">Create an account</a> · <a href="#/courses">Browse courses</a></p>`],
+   signup:["Create account",`<label>Full name</label><input name="name" required><div class="two"><div><label>City</label><input name="city"></div><div><label>University</label><input name="uni"></div></div><label>Email</label><input name="email" type="email" required autocomplete="email"><label>Password (8+ characters)</label><input name="password" type="password" minlength="8" required autocomplete="new-password"><label style="display:flex;gap:10px;align-items:flex-start;font-weight:500"><input type="checkbox" required style="width:auto;margin-top:4px"><span>I agree to the <a href="#/help/terms" target="_blank"><u>Terms</u></a> and <a href="#/help/privacy" target="_blank"><u>Privacy Policy</u></a></span></label>`,"Sign up",`<p class="hint">Already have an account? <a href="#/signin">Sign in</a></p>`],
    forgot:["Reset password",`<p class="hint">Enter your email and we will send you a reset link.</p><label>Email</label><input name="email" type="email" required>`,"Send reset link",`<p class="hint"><a href="#/signin">Back to sign in</a></p>`],
    reset:["New password",`<label>New password (8+ characters)</label><input name="password" type="password" minlength="8" required autocomplete="new-password">`,"Save password",""]}[k];
-  return `<div class="split"><div class="brand"><div><span class="eyebrow">softskill</span><h1>Learn it.<br>Lead it.</h1><p>Career skills, live masterclasses and a capstone project, built for students in Pakistan.</p></div><div class="pills"><span>Modules</span><span>Live classes</span><span>Notes</span><span>Links</span></div></div><div class="auth"><h1>${f[0]}</h1><form data-form="${k}">${f[1]}<div class="err" role="alert"></div><button class="btn" style="width:100%;margin-top:14px">${f[2]}</button></form><div style="margin-top:14px">${f[3]}</div></div></div>`}
+  return `<div class="split"><div class="brand"><div><span class="eyebrow">softskill</span><h1>Learn it.<br>Lead it.</h1><p>Career skills, live masterclasses and a capstone project, built for students in Pakistan.</p></div><div class="pills"><span>Modules</span><span>Live classes</span><span>Notes</span><span>Links</span></div></div><div class="auth"><h1>${f[0]}</h1><form data-form="${k}">${f[1]}<div class="err" role="alert"></div><button class="btn" style="width:100%;margin-top:14px">${f[2]}</button></form><div style="margin-top:14px">${f[3]}</div><p class="hint" style="margin:18px 0 0;text-align:center;font-size:12.5px"><a href="#/help/terms">Terms</a> · <a href="#/help/privacy">Privacy</a> · <a href="#/help/refund">Refunds</a></p></div></div>`}
 
 const approvedFor=(c,pays)=>prof?.is_admin||c.price==0||pays.some(p=>p.status==="approved"&&(p.course_id===c.id||p.courses?.is_bundle));
 const stat=s=>s==="approved"?'<span class="tag k">Approved</span>':s==="rejected"?'<span class="tag d">Rejected</span>':'<span class="tag">Pending verification</span>';
@@ -219,7 +224,7 @@ async function dash(){
   </div></div>`}
 
 async function course(id){
-  const [{data:c},ls,pr,pays]=await Promise.all([sb.from("courses").select("*").eq("id",id).single(),q(sb.from("lessons").select("*").eq("course_id",id).order("position")),q(sb.from("lesson_progress").select("lesson_id").eq("user_id",me.id)),myPays()]);
+  const [{data:c},ls,pr,pays,X]=await Promise.all([sb.from("courses").select("*").eq("id",id).single(),q(sb.from("lessons").select("*").eq("course_id",id).order("position")),q(sb.from("lesson_progress").select("lesson_id").eq("user_id",me.id)),myPays(),lmsData(id)]);
   if(!c)return '<div class="load">Course not found.</div>';
   const done=new Set(pr.map(x=>x.lesson_id)),ok=approvedFor(c,pays),mods=ls.filter(l=>l.kind==="module");
   const pct=mods.length?Math.round(mods.filter(m=>done.has(m.id)).length/mods.length*100):0;
@@ -234,15 +239,18 @@ async function course(id){
   <div class="t"><b>${esc(l.title)}</b><span class="hint">${l.kind==="class"?when(l.starts_at):KIND[l.kind][1]}</span></div>
   <span class="tag ${open(l)?"k":"d"}">${l.is_free&&c.price?"Free preview":open(l)?"Open":"Locked"}</span>
   ${open(l)?`<button class="btn s" data-act="open" data-id="${l.id}">${l.kind==="class"?"Join":l.kind==="note"?"Download":l.kind==="link"?"Visit":"Watch"}</button> <button class="btn s o" data-act="thread" data-id="${l.id}">Q&amp;A</button>`:`<button class="btn s o" data-act="unlock" data-id="${id}">Unlock</button>`}</div>`).join(""):`<div class="empty" style="margin-top:18px">Nothing here yet.</div>`}
+  ${lmsHtml(X,ok)}
   </div></div>`}
 
 let PLAN=null;
 const AC=()=>sessionStorage.getItem("ac");
 const localDT=t=>{const d=new Date(t);return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,16)};
+const ADM=["admin-unlock","ai-course","ai-live","ai-scenario","ai-quiz","approve-payment"];
 async function api(path,body,code){
   const t=(await sb.auth.getSession()).data.session?.access_token;
-  const r=await fetch("/api/"+path,{method:"POST",headers:{"content-type":"application/json",authorization:"Bearer "+t,...(code?{"x-admin-code":code}:{})},body:JSON.stringify(body||{})});
-  const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||"Request failed");return j}
+  const adm=ADM.includes(path);
+  const r=await fetch(adm?"/api/admin":"/api/"+path,{method:"POST",headers:{"content-type":"application/json",authorization:"Bearer "+t,...(code?{"x-admin-code":code}:{})},body:JSON.stringify(adm?{...(body||{}),action:path}:(body||{}))});
+  const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||("Server error "+r.status+(r.status===404?" (the /api function is missing: upload the api folder and redeploy)":r.status>=500?" (the server function crashed: check Vercel runtime logs)":"")));return j}
 const rowBtns=(t,id)=>`<button class="btn s o" data-act="edit" data-t="${t}" data-id="${id}">Edit</button> <button class="btn s o" data-act="del" data-t="${t}" data-id="${id}">Delete</button>`;
 const aiCell=p=>p.payment_ai?`<span class="tag ${p.payment_ai.verdict==="pass"?"k":"d"}">AI: ${p.payment_ai.verdict==="pass"?"verified":"needs review"}</span><div class="hint">${esc(p.payment_ai.note)}</div>`:'<span class="hint">Not checked</span>';
 function gate(){return `<div class="auth"><h1>Admin access</h1><p class="hint">Enter the admin code to continue.</p><form data-form="unlock"><label>Admin code</label><input name="code" type="password" required autocomplete="off"><div class="err" role="alert"></div><button class="btn" style="width:100%;margin-top:12px">Unlock</button></form></div>`}
@@ -277,13 +285,15 @@ async function editor(tbl,id){
 
 async function admin(){
   if(!AC())return gate();
-  const tabs=["payments","live","content","roleplay","settings"];
+  const tabs=["payments","live","content","lms","roleplay","settings"];
   let b="";
   if(T.a==="payments"){
     const ps=await q(sb.from("payments").select("*,profiles(full_name),courses(title,price),payment_ai(verdict,note)").order("created_at",{ascending:false}));
     const ap=ps.filter(p=>p.status==="approved");
-    b=`<div class="stats"><div><b>${ps.filter(p=>p.status==="pending").length}</b>Pending</div><div><b>${ap.length}</b>Approved</div><div><b>${pkr(ap.reduce((a,p)=>a+(p.courses?.price||0),0))}</b>Revenue</div></div>
+    b=`<div class="stats"><div><b>${ps.filter(p=>p.status==="pending").length}</b>Pending</div><div><b>${ap.length}</b>Approved</div><div><b>${pkr(ap.reduce((a,p)=>a+(p.courses?.price||0),0))}</b>Revenue</div></div><div style="margin:0 0 14px"><button class="btn s o" data-act="csv">Export CSV</button></div>
     ${ps.length?`<div class="scroll"><table><tr><th>Student</th><th>Course</th><th>Method</th><th>Sender</th><th>TID</th><th>Receipt</th><th>AI check</th><th>Status</th><th></th></tr>${ps.map(p=>`<tr><td>${esc(p.profiles?.full_name)}</td><td>${esc(p.courses?.title)}<div class="hint">${pkr(p.courses?.price)}</div></td><td>${p.method}</td><td>${esc(p.sender_phone)}</td><td>${esc(p.tid)}</td><td><button class="btn s o" data-act="rcpt" data-p="${esc(p.receipt_path)}">View</button></td><td>${aiCell(p)}</td><td>${stat(p.status)}</td><td>${p.status==="pending"?`<button class="btn s" data-act="appr" data-id="${p.id}">Approve</button> <button class="btn s o" data-act="rej" data-id="${p.id}">Reject</button>`:""}</td></tr>`).join("")}</table></div>`:'<div class="empty">No payment requests.</div>'}`;
+  }else if(T.a==="lms"){
+    b=await adminLMS();
   }else if(T.a==="roleplay"){
     b=await adminRP();
   }else if(T.a==="live"){
@@ -304,7 +314,7 @@ async function admin(){
     b=`<form data-form="settings" style="max-width:420px">${F.map(([k,l])=>`<label>${l}</label><input name="${k}" value="${esc(st[k])}">`).join("")}<div class="err"></div><button class="btn s" style="margin-top:12px">Save payment details</button></form>`;
   }
   return `<div class="dash"><aside class="side"><a class="on" href="#/admin">Admin</a><a href="#/app">Student view</a></aside><div class="body"><h2>Admin</h2>
-  <div class="tabs">${tabs.map(t=>`<button aria-selected="${t===T.a}" data-act="atab" data-v="${t}">${{payments:"Payments",live:"Live classes",content:"Courses & content",roleplay:"Roleplay",settings:"Settings"}[t]}</button>`).join("")}</div>${b}</div></div>`}
+  <div class="tabs">${tabs.map(t=>`<button aria-selected="${t===T.a}" data-act="atab" data-v="${t}">${{payments:"Payments",live:"Live classes",content:"Courses & content",lms:"Quizzes & tasks",roleplay:"Roleplay",settings:"Settings"}[t]}</button>`).join("")}</div>${b}</div></div>`}
 
 async function checkout(id){
   const [{data:c},st]=await Promise.all([sb.from("courses").select("*").eq("id",id).single(),q(sb.from("settings").select("*"))]);
