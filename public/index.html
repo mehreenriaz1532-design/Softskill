@@ -92,25 +92,20 @@ dialog::backdrop{background:rgba(10,10,10,.55);-webkit-backdrop-filter:blur(6px)
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--k);color:#fff;padding:12px 22px;border-radius:999px;z-index:30;font-weight:600;font-size:14px;box-shadow:0 14px 30px -10px rgba(0,0,0,.5)}
 .load{padding:80px;text-align:center;color:var(--g)}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
-.foot{max-width:1180px;width:calc(100% - 24px);margin:44px auto 20px;border-radius:28px;color:#fff;padding:32px 34px 20px;background:radial-gradient(110% 160% at 0% 0%,#3f3f46 0,#0A0A0A 60%);box-shadow:var(--sh)}
-.foot-in{display:flex;justify-content:space-between;align-items:flex-end;gap:28px;flex-wrap:wrap}
-.flogo{display:flex;align-items:center;font-weight:800;font-size:28px;letter-spacing:-.045em}
-.foot-brand p{margin:8px 0 0;color:#a1a1aa}
-.foot-dev{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
-.foot-dev b{font-size:20px;letter-spacing:-.02em}.fsmall{font-size:13px;color:#a1a1aa}
-.foot-dev .btn{margin-top:10px}
-.foot-bot{margin-top:24px;padding-top:16px;border-top:1px solid rgba(255,255,255,.14);color:#a1a1aa;font-size:13px}
-@media(max-width:860px){.split{grid-template-columns:1fr;min-height:0}.brand{display:none}.dash{grid-template-columns:1fr}.side{position:static;display:flex;overflow-x:auto;gap:4px}.side a{white-space:nowrap}.two{grid-template-columns:1fr}.banner{padding:26px}.auth{padding:28px}}
+.foot{max-width:1180px;width:calc(100% - 24px);margin:44px auto 20px;min-height:116px;border-radius:999px;color:#fff;padding:0 22px 0 38px;display:flex;align-items:center;justify-content:space-between;gap:16px 24px;flex-wrap:wrap;background:radial-gradient(110% 260% at 0% 0%,#3f3f46 0,#0A0A0A 60%);box-shadow:var(--sh)}
+.foot-brand{display:flex;flex-direction:column;gap:3px}
+.flogo{display:flex;align-items:center;font-weight:800;font-size:22px;letter-spacing:-.045em}
+.fsmall{font-size:12.5px;color:#a1a1aa}
+.foot-dev{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.foot-who{display:flex;flex-direction:column;line-height:1.3;text-align:right}.foot-who b{font-size:16px;letter-spacing:-.02em}
+@media(max-width:860px){.foot{border-radius:28px;padding:20px 22px;justify-content:center;text-align:center}.foot-brand,.foot-dev{align-items:center;justify-content:center}.foot-who{text-align:center}.split{grid-template-columns:1fr;min-height:0}.brand{display:none}.dash{grid-template-columns:1fr}.side{position:static;display:flex;overflow-x:auto;gap:4px}.side a{white-space:nowrap}.two{grid-template-columns:1fr}.banner{padding:26px}.auth{padding:28px}}
 </style>
 </head>
 <body>
 <div id="nav"></div><div id="main"><div class="load">Loading…</div></div>
 <footer class="foot">
-  <div class="foot-in">
-    <div class="foot-brand"><span class="flogo">soft<span>skill</span></span><p>Learn skills. Lead with confidence.</p></div>
-    <div class="foot-dev"><span class="fsmall">Developed by</span><b>Mehreen Riaz</b><span class="fsmall">Need a website? Get in touch.</span><a class="btn o s" href="mailto:mehreenriaz1532@gmail.com?subject=Website%20inquiry">mehreenriaz1532@gmail.com</a></div>
-  </div>
-  <div class="foot-bot">© <span id="yr"></span> softskill. All rights reserved.</div>
+  <div class="foot-brand"><span class="flogo">soft<span>skill</span></span><span class="fsmall">Learn skills. Lead with confidence. © <span id="yr"></span> softskill</span></div>
+  <div class="foot-dev"><div class="foot-who"><span class="fsmall">Developed by</span><b>Mehreen Riaz</b></div><a class="btn o s" href="mailto:mehreenriaz1532@gmail.com?subject=Website%20inquiry" title="Need a website? Get in touch.">mehreenriaz1532@gmail.com</a></div>
 </footer>
 <dialog id="dlg"><div class="dlg" id="dbody"></div></dialog>
 <div id="toast" class="toast" hidden></div>
@@ -377,8 +372,8 @@ const A={
 };
 document.addEventListener("click",e=>{const el=e.target.closest("[data-act]");if(el&&A[el.dataset.act])A[el.dataset.act](el)});
 $("#yr").textContent=new Date().getFullYear();
-install();
-boot();
+if(typeof install==="function"){install();boot()}
+else main.innerHTML='<div class="load">Setup incomplete: public/skills.js is missing. Upload it to the public folder and redeploy.</div>';
 </script>
 </body>
 </html>
