@@ -53,4 +53,26 @@ async function ai(content, system, max = 1500) {
   return JSON.parse(m[0]);
 }
 
-module.exports = { db, user, admin, ai };
+const SK = ['communication', 'eq', 'leadership', 'negotiation', 'presence'];
+// Validates a roleplay scenario: every choice points to a real node, every decision has 2-4 choices, scores are 0-10.
+function cleanScenario(o) {
+  const raw = o?.nodes || {}, ids = Object.keys(raw).slice(0, 14), nodes = {};
+  for (const id of ids) {
+    const n = raw[id] || {}, node = { text: String(n.text || '').slice(0, 500) };
+    if (n.end) node.end = true;
+    else node.choices = (n.choices || []).slice(0, 4).map(c => ({
+      text: String(c.text || '').slice(0, 240), next: String(c.next || ''),
+      score: Object.fromEntries(SK.filter(k => Number.isFinite(+c.score?.[k])).map(k => [k, Math.max(0, Math.min(10, Math.round(+c.score[k])))]))
+    }));
+    nodes[id] = node;
+  }
+  for (const id of ids) {
+    const n = nodes[id];
+    if (!n.text) return null;
+    if (!n.end && (!n.choices || n.choices.length < 2 || n.choices.some(c => !c.text || !nodes[c.next]))) return null;
+  }
+  if (!ids.some(i => nodes[i].end)) return null;
+  return { start: nodes[o.start] ? o.start : ids[0], nodes };
+}
+
+module.exports = { db, user, admin, ai, cleanScenario, SK };
