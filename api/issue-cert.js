@@ -18,6 +18,12 @@ module.exports = async (req, res) => {
   if (!mods?.length) return res.status(400).json({ error: 'This course has no modules yet.' });
   const { data: done } = await db.from('lesson_progress').select('lesson_id').eq('user_id', u.id).in('lesson_id', mods.map(m => m.id));
   if ((done || []).length < mods.length) return res.status(400).json({ error: 'Complete every module first.' });
+  const { data: qz } = await db.from('quizzes').select('id').eq('course_id', cid);
+  if (qz?.length) {
+    const { data: pass } = await db.from('quiz_attempts').select('quiz_id').eq('user_id', u.id).eq('passed', true).in('quiz_id', qz.map(x => x.id));
+    const ok = new Set((pass || []).map(x => x.quiz_id));
+    if (qz.some(x => !ok.has(x.id))) return res.status(400).json({ error: 'Pass every quiz in this course first.' });
+  }
   const code = 'SS-' + crypto.randomBytes(4).toString('hex').toUpperCase();
   const { error } = await db.from('certificates').insert({ user_id: u.id, course_id: cid, code });
   if (error) return res.status(500).json({ error: 'Could not issue the certificate.' });
