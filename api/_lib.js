@@ -75,4 +75,29 @@ function cleanScenario(o) {
   return { start: nodes[o.start] ? o.start : ids[0], nodes };
 }
 
-module.exports = { db, user, admin, ai, cleanScenario, SK };
+const nodemailer = require('nodemailer');
+let tx;
+// Sends mail through your SMTP account (same Gmail app password you gave Supabase, or Brevo/Resend later).
+async function mail({ to, bcc, subject, html }) {
+  if (!process.env.SMTP_HOST) return false;
+  try {
+    const port = +process.env.SMTP_PORT || 465;
+    tx = tx || nodemailer.createTransport({ host: process.env.SMTP_HOST, port, secure: port === 465, auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } });
+    await tx.sendMail({ from: process.env.MAIL_FROM || `softskill <${process.env.SMTP_USER}>`, to, bcc, subject, html });
+    return true;
+  } catch (e) { console.error('mail failed:', e.message); return false; }
+}
+const SITE = () => process.env.SITE_URL || '';
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const wrap = (title, body) => `<div style="font-family:Arial,sans-serif;max-width:520px;margin:auto;padding:24px;color:#0a0a0a"><h2 style="margin:0 0 14px">${title}</h2>${body}<p style="color:#71717a;font-size:12px;margin-top:28px">softskill</p></div>`;
+
+// Does this user have access to the course (free, paid, or covered by an approved bundle)?
+async function access(uid, cid) {
+  const { data: c } = await db.from('courses').select('price').eq('id', cid).maybeSingle();
+  if (!c) return false;
+  if (c.price === 0) return true;
+  const { data: ps } = await db.from('payments').select('course_id,courses(is_bundle)').eq('user_id', uid).eq('status', 'approved');
+  return (ps || []).some(p => p.course_id === cid || p.courses?.is_bundle);
+}
+
+module.exports = { db, user, admin, ai, cleanScenario, SK, mail, wrap, esc, SITE, access };
