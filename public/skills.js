@@ -3,7 +3,7 @@
 const SK=[["communication","Communication","Communication"],["eq","Emotional Intelligence","Emotional IQ"],["leadership","Leadership","Leadership"],["negotiation","Negotiation","Negotiation"],["presence","Executive Presence","Presence"]];
 const SKL=Object.fromEntries(SK.map(([k,l])=>[k,l]));
 const AUTH=["skills","roleplay","play","coach","journal","practice","certs","cert"];
-const SIDE=[["app","My learning"],["live","Live classes"],["skills","Skills radar"],["roleplay","Roleplay"],["coach","Pitch coach"],["journal","Journal"],["practice","Practice rooms"],["certs","Certificates"]];
+const SIDE=[["app","My learning"],["live","Live classes"],["skills","Skills radar"],["roleplay","Roleplay"],["coach","Pitch coach"],["journal","Journal"],["practice","Practice rooms"],["certs","Certificates"],["help","Help"]];
 const side=on=>SIDE.map(([r,l])=>`<a href="#/${r}" class="${r===on?"on":""}">${l}</a>`).join("");
 const hid=()=>decodeURIComponent(location.hash.split("/")[2]||"");
 const today=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
