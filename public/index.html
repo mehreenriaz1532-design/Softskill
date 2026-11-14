@@ -10,7 +10,7 @@
 :root{--bg:#F4F4F5;--s:#fff;--k:#0A0A0A;--g:#71717A;--l:rgba(10,10,10,.09);--sh:0 1px 2px rgba(0,0,0,.04),0 10px 28px -10px rgba(0,0,0,.14)}
 *{box-sizing:border-box}
 html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
-body{margin:0;color:var(--k);font:400 15.5px/1.6 "Plus Jakarta Sans",system-ui,sans-serif;background:radial-gradient(60% 40% at 88% -5%,#fff 0,transparent 70%),radial-gradient(50% 40% at 0% 100%,#e8e8ea 0,transparent 70%),var(--bg);background-attachment:fixed;min-height:100vh}
+body{margin:0;color:var(--k);font:400 15.5px/1.6 "Plus Jakarta Sans",system-ui,sans-serif;background:radial-gradient(60% 40% at 88% -5%,#fff 0,transparent 70%),radial-gradient(50% 40% at 0% 100%,#e8e8ea 0,transparent 70%),var(--bg);min-height:100vh}
 h1,h2,h3{font-weight:700;letter-spacing:-.03em;line-height:1.12;margin:0}
 h2{font-size:clamp(22px,2.6vw,28px)}
 a{color:inherit}button,input,select,textarea{font:inherit}
@@ -44,7 +44,7 @@ input[type=checkbox]{width:auto}
 .ok{background:#fff;border:1px solid var(--l);border-radius:16px;padding:16px 18px;margin-top:14px;box-shadow:var(--sh)}
 .hint{color:var(--g);font-size:13.5px}
 .dash{display:grid;grid-template-columns:220px 1fr;gap:18px;max-width:1180px;margin:18px auto 0;padding:0 12px 60px;align-items:start}
-.side{position:sticky;top:84px;padding:8px;border-radius:20px;background:rgba(255,255,255,.7);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid #fff;box-shadow:var(--sh)}
+.side{padding:8px;border-radius:20px;background:#fff;border:1px solid var(--l);box-shadow:var(--sh)}
 .side a{display:block;padding:10px 16px;text-decoration:none;border-radius:12px;font-weight:500;font-size:14.5px;color:#3f3f46;transition:background .15s}
 .side a:hover{background:rgba(0,0,0,.05)}.side a.on{background:var(--k);color:#fff}
 .body{min-width:0}
@@ -125,8 +125,11 @@ async function boot(){
   try{const c=await(await fetch("/api/config")).json();
     if(!c.url||!c.anon)throw 0;sb=supabase.createClient(c.url,c.anon)}
   catch(e){main.innerHTML='<div class="load">Setup missing: add SUPABASE_URL and SUPABASE_ANON_KEY in Vercel, then redeploy.</div>';return}
+  let lastUid;
   sb.auth.onAuthStateChange((ev,s)=>setTimeout(async()=>{
-    me=s?.user||null;prof=null;
+    const uid=s?.user?.id||null;
+    if(ev==="TOKEN_REFRESHED"||(ev==="SIGNED_IN"&&uid&&uid===lastUid&&prof))return;
+    lastUid=uid;me=s?.user||null;prof=null;
     if(me)prof=(await q(sb.from("profiles").select("*").eq("id",me.id)))[0]||null;
     if(ev==="PASSWORD_RECOVERY")location.hash="#/reset";
     go()},0));
@@ -174,8 +177,9 @@ const stat=s=>s==="approved"?'<span class="tag k">Approved</span>':s==="rejected
 const myPays=()=>q(sb.from("payments").select("*,courses(title,is_bundle)").eq("user_id",me.id).order("created_at",{ascending:false}));
 
 async function dash(){
+  const pre=dashData();
   const [cs,pays]=await Promise.all([q(sb.from("courses").select("*").order("position")),myPays()]);
-  const D=await dashExtra(cs,pays);
+  const D=await dashExtra(cs,pays,pre);
   return `<div class="dash"><aside class="side">${side("app")}</aside><div class="body">
   <div class="banner"><div><span class="eyebrow">Welcome back</span><h1>Hello, ${esc((prof?.full_name||me.email.split("@")[0]).split(" ")[0])}</h1><p>Pick a course to see its modules, live classes, notes and links.</p></div><div class="bstats">${D.stats}</div></div>${D.panel}<h2 style="margin-bottom:14px">Your courses</h2>
   <div class="grid">${cs.map((c,i)=>{const ok=approvedFor(c,pays);return `<div class="card"><div class="cover c${i%3}"><span>${String(i+1).padStart(2,"0")}</span></div><div class="row"><span class="tag ${ok?"k":"d"}">${ok?(c.price?"Unlocked":"Free"):"Locked"}</span><b>${pkr(c.price)}</b></div><h3>${esc(c.title)}</h3><p>${esc(c.description)}</p>
@@ -187,9 +191,8 @@ async function dash(){
   </div></div>`}
 
 async function course(id){
-  const {data:c}=await sb.from("courses").select("*").eq("id",id).single();
+  const [{data:c},ls,pr,pays]=await Promise.all([sb.from("courses").select("*").eq("id",id).single(),q(sb.from("lessons").select("*").eq("course_id",id).order("position")),q(sb.from("lesson_progress").select("lesson_id").eq("user_id",me.id)),myPays()]);
   if(!c)return '<div class="load">Course not found.</div>';
-  const [ls,pr,pays]=await Promise.all([q(sb.from("lessons").select("*").eq("course_id",id).order("position")),q(sb.from("lesson_progress").select("lesson_id").eq("user_id",me.id)),myPays()]);
   const done=new Set(pr.map(x=>x.lesson_id)),ok=approvedFor(c,pays),mods=ls.filter(l=>l.kind==="module");
   const pct=mods.length?Math.round(mods.filter(m=>done.has(m.id)).length/mods.length*100):0;
   const list=ls.filter(l=>l.kind===T.c);
