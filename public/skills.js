@@ -17,12 +17,13 @@ function streakOf(days){const set=new Set(days);let d=new Date(Date.now()-new Da
   while(set.has(d.toISOString().slice(0,10))){n++;d=new Date(d-864e5)}return n}
 
 /* ---------- dashboard extras ---------- */
-async function dashExtra(cs,pays){
-  const [mods,pr,je,lv]=await Promise.all([
+const dashData=()=>Promise.all([
     q(sb.from("lessons").select("id,course_id").eq("kind","module")),
     q(sb.from("lesson_progress").select("lesson_id,done_at").eq("user_id",me.id).order("done_at",{ascending:false})),
     q(sb.from("journal_entries").select("day").eq("user_id",me.id)),
     q(sb.from("live_classes").select("*").gte("starts_at",new Date(Date.now()-72e5).toISOString()).order("starts_at").limit(3))]);
+async function dashExtra(cs,pays,pre){
+  const [mods,pr,je,lv]=await (pre||dashData());
   const open=new Set(cs.filter(c=>approvedFor(c,pays)).map(c=>c.id)),mm=mods.filter(m=>open.has(m.course_id)),done=new Set(pr.map(x=>x.lesson_id));
   const pct=mm.length?Math.round(mm.filter(m=>done.has(m.id)).length/mm.length*100):0;
   const last=pr[0]&&mods.find(m=>m.id===pr[0].lesson_id),rid=last?last.course_id:[...open][0],st=streakOf(je.map(x=>x.day));
