@@ -1,8 +1,7 @@
-
-const { admin, ai } = require('../_lib');
+const { staff, ai } = require('../_lib');
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).end();
-  if (!(await admin(req, res))) return;
+  if (!(await staff(req, res))) return;
   const text = String(req.body?.text || '').slice(0, 12000);
   if (text.length < 10) return res.status(400).json({ error: 'Paste some course content first.' });
   try {
