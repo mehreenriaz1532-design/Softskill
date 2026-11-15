@@ -3,8 +3,8 @@
 const SK=[["communication","Communication","Communication"],["eq","Emotional Intelligence","Emotional IQ"],["leadership","Leadership","Leadership"],["negotiation","Negotiation","Negotiation"],["presence","Executive Presence","Presence"]];
 const SKL=Object.fromEntries(SK.map(([k,l])=>[k,l]));
 const AUTH=["skills","roleplay","play","coach","journal","practice","certs","cert"];
-const SIDE=[["app","My learning"],["live","Live classes"],["skills","Skills radar"],["roleplay","Roleplay"],["coach","Pitch coach"],["journal","Journal"],["practice","Practice rooms"],["certs","Certificates"],["help","Help"]];
-const side=on=>SIDE.map(([r,l])=>`<a href="#/${r}" class="${r===on?"on":""}">${l}</a>`).join("");
+const SIDE=[["app","My learning","book"],["live","Live classes","video"],["skills","Skills radar","target"],["roleplay","Roleplay","chat"],["coach","Pitch coach","mic"],["journal","Journal","pen"],["practice","Practice rooms","users"],["certs","Certificates","award"],["help","Help","help"]];
+const side=on=>SIDE.map(([r,l,i])=>`<a href="#/${r}" class="${r===on?"on":""}">${ic(i,18)}<span>${l}</span></a>`).join("");
 const hid=()=>decodeURIComponent(location.hash.split("/")[2]||"");
 const today=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
 const shell=(on,inner)=>`<div class="dash"><aside class="side">${side(on)}</aside><div class="body">${inner}</div></div>`;
@@ -27,7 +27,7 @@ async function dashExtra(cs,pays,pre){
   const open=new Set(cs.filter(c=>approvedFor(c,pays)).map(c=>c.id)),mm=mods.filter(m=>open.has(m.course_id)),done=new Set(pr.map(x=>x.lesson_id));
   const pct=mm.length?Math.round(mm.filter(m=>done.has(m.id)).length/mm.length*100):0;
   const last=pr[0]&&mods.find(m=>m.id===pr[0].lesson_id),rid=last?last.course_id:[...open][0],st=streakOf(je.map(x=>x.day));
-  const stats=`<div><b>${pct}%</b><span>Completed</span></div><div><b>${st}</b><span>Day streak</span></div><div><b>${open.size}</b><span>Courses open</span></div><div><b>${pays.filter(p=>p.status==="pending").length}</b><span>Pending</span></div>`;
+  const stats=`<div><b>${pct}%</b><span>${ic("check",12)} Completed</span></div><div><b>${st}</b><span>${ic("flame",12)} Day streak</span></div><div><b>${open.size}</b><span>${ic("book",12)} Courses open</span></div><div><b>${pays.filter(p=>p.status==="pending").length}</b><span>${ic("clock",12)} Pending</span></div>`;
   const panel=`<div class="grid" style="margin-bottom:30px"><div class="ok" style="margin:0"><h3 style="font-size:20px;margin-bottom:6px">Upcoming live sessions</h3>${lv.length?lv.map(l=>`<div style="padding:8px 0;border-bottom:1px solid var(--l)"><b>${esc(l.title)}</b><div class="hint">${when(l.starts_at)}</div></div>`).join(""):'<p class="hint">No live sessions scheduled yet.</p>'}<a class="btn s o" style="margin-top:12px" href="#/live">All live classes</a></div>
   <div class="ok" style="margin:0"><h3 style="font-size:20px;margin-bottom:6px">Keep going</h3><p class="hint">${st?"You are on a "+st+"-day streak. ":""}Pick up where you left off, then do today's challenge.</p><div style="display:flex;gap:8px;flex-wrap:wrap">${rid?`<a class="btn" href="#/course/${rid}">${last?"Resume learning":"Start learning"}</a>`:""}<a class="btn o" href="#/journal">Today's challenge</a></div></div></div>`;
   return {stats,panel}}
@@ -35,7 +35,7 @@ async function dashExtra(cs,pays,pre){
 /* ---------- skills radar ---------- */
 function radar(v){const cx=150,cy=150,R=108,n=5,pt=(i,r)=>{const a=-Math.PI/2+i*2*Math.PI/n;return [cx+r*Math.cos(a),cy+r*Math.sin(a)]};
   const ring=f=>SK.map((_,i)=>pt(i,R*f).join(",")).join(" "),poly=SK.map(([k],i)=>pt(i,R*Math.max(.03,v[k]/100)).join(",")).join(" ");
-  return `<svg viewBox="0 0 300 300" style="width:100%;max-width:380px" role="img" aria-label="Skills radar chart">${[.25,.5,.75,1].map(f=>`<polygon points="${ring(f)}" fill="none" stroke="rgba(0,0,0,.12)"/>`).join("")}${SK.map((_,i)=>{const[x,y]=pt(i,R);return `<line x1="150" y1="150" x2="${x}" y2="${y}" stroke="rgba(0,0,0,.12)"/>`}).join("")}<polygon points="${poly}" fill="rgba(10,10,10,.16)" stroke="#0A0A0A" stroke-width="2"/>${SK.map(([k],i)=>{const[x,y]=pt(i,v[k]/100*R);return `<circle cx="${x}" cy="${y}" r="4" fill="#0A0A0A"/>`}).join("")}${SK.map(([,,s],i)=>{const[x,y]=pt(i,R+20);return `<text x="${x}" y="${y+4}" text-anchor="middle" font-size="11" font-weight="600" fill="#3f3f46">${s}</text>`}).join("")}</svg>`}
+  return `<svg viewBox="0 0 300 300" style="width:100%;max-width:380px" role="img" aria-label="Skills radar chart">${[.25,.5,.75,1].map(f=>`<polygon points="${ring(f)}" fill="none" stroke="rgba(0,0,0,.12)"/>`).join("")}${SK.map((_,i)=>{const[x,y]=pt(i,R);return `<line x1="150" y1="150" x2="${x}" y2="${y}" stroke="rgba(0,0,0,.12)"/>`}).join("")}<polygon points="${poly}" fill="rgba(91,75,219,.2)" stroke="#5B4BDB" stroke-width="2"/>${SK.map(([k],i)=>{const[x,y]=pt(i,v[k]/100*R);return `<circle cx="${x}" cy="${y}" r="4" fill="#5B4BDB"/>`}).join("")}${SK.map(([,,s],i)=>{const[x,y]=pt(i,R+20);return `<text x="${x}" y="${y+4}" text-anchor="middle" font-size="11" font-weight="600" fill="#3f3f46">${s}</text>`}).join("")}</svg>`}
 async function skills(){
   const [ev,pa]=await Promise.all([q(sb.from("skill_events").select("skill,points").eq("user_id",me.id)),q(sb.from("pitch_attempts").select("clarity,confidence").eq("user_id",me.id))]);
   const v=Object.fromEntries(SK.map(([k])=>[k,0]));ev.forEach(e=>v[e.skill]+=e.points);
@@ -51,7 +51,7 @@ let RP=null;
 async function roleplay(){
   const ss=await q(sb.from("scenarios").select("id,title,description,skill").order("created_at"));
   return shell("roleplay",hero("Roleplay","Workplace simulator","Choose how you respond. Each choice changes the conversation and your skill scores.")+
-  (ss.length?`<div class="grid">${ss.map((s,i)=>`<div class="card"><div class="cover c${i%3}"><span>${String(i+1).padStart(2,"0")}</span></div><span class="tag" style="align-self:flex-start">${SKL[s.skill]||""}</span><h3>${esc(s.title)}</h3><p>${esc(s.description)}</p><div><a class="btn s" href="#/play/${s.id}">Start</a></div></div>`).join("")}</div>`:'<div class="empty">No scenarios yet.</div>'))}
+  (ss.length?`<div class="grid">${ss.map((s,i)=>`<div class="card"><div class="cover c${i%4}"><span>${String(i+1).padStart(2,"0")}</span></div><span class="tag" style="align-self:flex-start">${SKL[s.skill]||""}</span><h3>${esc(s.title)}</h3><p>${esc(s.description)}</p><div><a class="btn s" href="#/play/${s.id}">Start</a></div></div>`).join("")}</div>`:'<div class="empty">No scenarios yet.</div>'))}
 function rpHtml(){const n=RP.s.data.nodes[RP.cur];
   if(n.end)return `<div class="ok"><h3 style="font-size:22px">Scenario complete</h3><p>${esc(n.text)}</p><div id="rpres" class="hint">Scoring…</div></div>`;
   return `<div class="ok"><p class="hint" style="margin:0 0 6px">Step ${RP.path.length+1}</p><h3 style="font-size:20px;line-height:1.4">${esc(n.text)}</h3>${n.choices.map((c,i)=>`<button class="btn o" style="display:block;width:100%;text-align:left;margin-top:10px;border-radius:16px;justify-content:flex-start" data-act="rpc" data-i="${i}">${esc(c.text)}</button>`).join("")}</div>`}
@@ -78,7 +78,7 @@ async function journal(){
   const days=es.map(e=>e.day),st=streakOf(days),done=days.includes(today()),ch=done?es[0].challenge:CHAL[Math.min(es.length,20)];
   return shell("journal",hero("Journal","21-day soft skill streak","One small challenge a day. Write what happened and what you learned.")+
   `<div class="ok" style="margin-top:0"><div class="row"><b>Day ${Math.min(es.length+(done?0:1),21)} of 21</b><span class="tag k">${st} day streak</span></div>
-  <div style="display:flex;gap:6px;flex-wrap:wrap;margin:14px 0">${Array.from({length:21},(_,i)=>`<span style="width:22px;height:22px;border-radius:50%;background:${i<es.length?"#0A0A0A":"#e4e4e7"}"></span>`).join("")}</div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin:14px 0">${Array.from({length:21},(_,i)=>`<span style="width:22px;height:22px;border-radius:50%;background:${i<es.length?"#5B4BDB":"#E7E3F6"}"></span>`).join("")}</div>
   ${done?`<p><b>Today's challenge:</b> ${esc(ch)}</p><p class="hint">Done for today. Come back tomorrow to keep your streak.</p>`:`<form data-form="jentry"><p><b>Today's challenge:</b> ${esc(ch)}</p><input type="hidden" name="challenge" value="${esc(ch)}"><label>Your reflection</label><textarea name="note" rows="4" required placeholder="What did you do, and how did it feel?"></textarea><div class="err"></div><button class="btn" style="margin-top:12px">Save reflection</button></form>`}</div>`+
   (es.length?`<h2 style="margin:28px 0 8px">Past reflections</h2>${es.map(e=>`<div class="item"><div class="t"><b>${esc(e.challenge)}</b><span class="hint">${e.day}</span><div style="margin-top:4px">${esc(e.note)}</div></div></div>`).join("")}`:""))}
 
@@ -98,14 +98,14 @@ async function certs(){
   const [cs,mods,pr,ce,pays]=await Promise.all([q(sb.from("courses").select("*").order("position")),q(sb.from("lessons").select("id,course_id").eq("kind","module")),q(sb.from("lesson_progress").select("lesson_id").eq("user_id",me.id)),q(sb.from("certificates").select("*").eq("user_id",me.id)),myPays()]);
   const done=new Set(pr.map(x=>x.lesson_id)),rows=cs.filter(c=>!c.is_bundle&&approvedFor(c,pays)).map(c=>{
     const m=mods.filter(x=>x.course_id===c.id),pct=m.length?Math.round(m.filter(x=>done.has(x.id)).length/m.length*100):0,ct=ce.find(x=>x.course_id===c.id);
-    return `<div class="item"><div class="t"><b>${esc(c.title)}</b><div class="bar" style="margin:8px 0 0"><i style="width:${pct}%"></i></div><span class="hint">${m.length?pct+"% of modules complete":"No modules yet"}</span></div>${ct?`<a class="btn s" href="#/cert/${ct.code}">View certificate</a>`:pct===100?`<button class="btn s" data-act="claim" data-id="${c.id}">Get certificate</button>`:'<span class="tag d">Locked</span>'}</div>`}).join("");
+    return `<div class="item"><div class="t"><b>${esc(c.title)}</b><div class="bar" style="margin:8px 0 0"><i style="width:${pct}%"></i></div><span class="hint">${m.length?pct+"% of modules complete":"No modules yet"}</span></div>${ct?`<a class="btn s" href="#/cert/${ct.code}">View certificate</a>`:pct===100?`<button class="btn s" data-act="claim" data-id="${c.id}">Get certificate</button>`:'<span class="tag d">'+ic("lock",12)+' Locked</span>'}</div>`}).join("");
   return shell("certs",hero("Certificates","Your certificates","Finish every module in a course to earn a certificate with a QR code anyone can verify.")+(rows||'<div class="empty">Unlock a course to start earning certificates.</div>'))}
 async function cert(){
   const code=hid(),{data:c}=await sb.from("certificates").select("*,courses(title)").eq("code",code).eq("user_id",me.id).maybeSingle();
   if(!c)return '<div class="auth" style="margin-top:60px"><h1>Not found</h1><p>This certificate does not exist on your account.</p></div>';
   await loadQR();let qr="";const url=location.origin+"/#/verify/"+code;
   try{const g=qrcode(0,"M");g.addData(url);g.make();qr=g.createSvgTag({cellSize:3,margin:0})}catch(e){}
-  return `<div class="certwrap"><div class="cert"><span class="eyebrow" style="background:#0A0A0A;color:#fff">softskill</span><p class="hint" style="margin:18px 0 0">Certificate of completion</p><h1>${esc(prof?.full_name||me.email.split("@")[0])}</h1><p class="hint">has successfully completed</p><h2>${esc(c.courses?.title)}</h2>
+  return `<div class="certwrap"><div class="cert"><span class="eyebrow" style="background:#5B4BDB;color:#fff">softskill</span><p class="hint" style="margin:18px 0 0">Certificate of completion</p><h1>${esc(prof?.full_name||me.email.split("@")[0])}</h1><p class="hint">has successfully completed</p><h2>${esc(c.courses?.title)}</h2>
   <div class="certfoot"><div><b>${new Date(c.issued_at).toLocaleDateString("en-PK",{dateStyle:"long"})}</b><span>Date issued</span></div><div style="width:84px">${qr}</div><div><b>${code}</b><span>Verification ID</span></div></div><p class="hint" style="margin:18px 0 0;font-size:12px">Verify at ${esc(url)}</p></div>
   <div class="noprint"><button class="btn" data-act="print">Print or save as PDF</button> <a class="btn o" href="#/certs">Back</a></div></div>`}
 async function verify(){
@@ -168,5 +168,5 @@ const AX={
 };
 const EXTRA={skills,roleplay,play,coach,journal,practice,certs,cert,verify};
 function install(){Object.assign(H,HX);Object.assign(A,AX);
-  const st=document.createElement("style");st.textContent=`.certwrap{max-width:900px;margin:30px auto;padding:0 12px}.cert{background:#fff;border:10px double #0A0A0A;border-radius:6px;padding:46px 36px;text-align:center;box-shadow:var(--sh)}.cert h1{font-size:clamp(30px,6vw,52px);margin:10px 0}.cert h2{font-size:clamp(20px,4vw,30px);margin:8px 0 26px}.certfoot{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}.certfoot b{display:block}.certfoot span{font-size:12px;color:var(--g)}.noprint{text-align:center;margin-top:20px}@media print{.nav,.foot,.noprint,#toast{display:none!important}body{background:#fff!important}.cert{box-shadow:none}@page{size:A4 landscape;margin:12mm}}`;
+  const st=document.createElement("style");st.textContent=`.certwrap{max-width:900px;margin:30px auto;padding:0 12px}.cert{background:#fff;border:10px double #5B4BDB;border-radius:6px;padding:46px 36px;text-align:center;box-shadow:var(--sh)}.cert h1{font-size:clamp(30px,6vw,52px);margin:10px 0}.cert h2{font-size:clamp(20px,4vw,30px);margin:8px 0 26px}.certfoot{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}.certfoot b{display:block}.certfoot span{font-size:12px;color:var(--g)}.noprint{text-align:center;margin-top:20px}@media print{.nav,.foot,.noprint,#toast{display:none!important}body{background:#fff!important}.cert{box-shadow:none}@page{size:A4 landscape;margin:12mm}}`;
   document.head.appendChild(st)}
