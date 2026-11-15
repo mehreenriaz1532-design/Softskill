@@ -7,7 +7,10 @@ const loaders = {
   'ai-live': () => require('./_h/ai-live'),
   'ai-scenario': () => require('./_h/ai-scenario'),
   'ai-quiz': () => require('./_h/ai-quiz'),
-  'approve-payment': () => require('./_h/approve-payment')
+  'approve-payment': () => require('./_h/approve-payment'),
+  'list-students': () => require('./_h/list-students'),
+  'grant-access': () => require('./_h/grant-access'),
+  'block-user': () => require('./_h/block-user')
 };
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).end();
