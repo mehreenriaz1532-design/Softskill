@@ -93,21 +93,25 @@ async function practice(){
   <h2 style="margin:28px 0 4px">Upcoming slots</h2>${sl.length?sl.map(row).join(""):'<div class="empty" style="margin-top:12px">No slots yet. Create the first one.</div>'}`)}
 
 /* ---------- certificates ---------- */
-const loadQR=()=>new Promise(r=>{if(window.qrcode)return r();const s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js";s.onload=r;s.onerror=r;document.head.appendChild(s)});
+const loadQR=()=>new Promise(r=>{if(window.qrcode)return r();const x=document.createElement("script");x.src="/qrcode.js";x.onload=r;x.onerror=r;document.head.appendChild(x)});
 async function certs(){
   const [cs,mods,pr,ce,pays]=await Promise.all([q(sb.from("courses").select("*").order("position")),q(sb.from("lessons").select("id,course_id").eq("kind","module")),q(sb.from("lesson_progress").select("lesson_id").eq("user_id",me.id)),q(sb.from("certificates").select("*").eq("user_id",me.id)),myPays()]);
   const done=new Set(pr.map(x=>x.lesson_id)),rows=cs.filter(c=>!c.is_bundle&&approvedFor(c,pays)).map(c=>{
     const m=mods.filter(x=>x.course_id===c.id),pct=m.length?Math.round(m.filter(x=>done.has(x.id)).length/m.length*100):0,ct=ce.find(x=>x.course_id===c.id);
     return `<div class="item"><div class="t"><b>${esc(c.title)}</b><div class="bar" style="margin:8px 0 0"><i style="width:${pct}%"></i></div><span class="hint">${m.length?pct+"% of modules complete":"No modules yet"}</span></div>${ct?`<a class="btn s" href="#/cert/${ct.code}">View certificate</a>`:pct===100?`<button class="btn s" data-act="claim" data-id="${c.id}">Get certificate</button>`:'<span class="tag d">'+ic("lock",12)+' Locked</span>'}</div>`}).join("");
   return shell("certs",hero("Certificates","Your certificates","Finish every module in a course to earn a certificate with a QR code anyone can verify.")+(rows||'<div class="empty">Unlock a course to start earning certificates.</div>'))}
+function certFonts(){if(document.getElementById("certfonts"))return;const l=document.createElement("link");l.id="certfonts";l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family=Allura&family=Cormorant+Garamond:wght@700&display=swap";document.head.appendChild(l)}
 async function cert(){
-  const code=hid(),{data:c}=await sb.from("certificates").select("*,courses(title)").eq("code",code).eq("user_id",me.id).maybeSingle();
+  const code=hid(),{data:c}=await sb.from("certificates").select("*,courses(title,owner_id)").eq("code",code).eq("user_id",me.id).maybeSingle();
   if(!c)return '<div class="auth" style="margin-top:60px"><h1>Not found</h1><p>This certificate does not exist on your account.</p></div>';
-  await loadQR();let qr="";const url=location.origin+"/#/verify/"+code;
-  try{const g=qrcode(0,"M");g.addData(url);g.make();qr=g.createSvgTag({cellSize:3,margin:0})}catch(e){}
-  return `<div class="certwrap"><div class="cert"><span class="eyebrow" style="background:#5B4BDB;color:#fff">softskill</span><p class="hint" style="margin:18px 0 0">Certificate of completion</p><h1>${esc(prof?.full_name||me.email.split("@")[0])}</h1><p class="hint">has successfully completed</p><h2>${esc(c.courses?.title)}</h2>
-  <div class="certfoot"><div><b>${new Date(c.issued_at).toLocaleDateString("en-PK",{dateStyle:"long"})}</b><span>Date issued</span></div><div style="width:84px">${qr}</div><div><b>${code}</b><span>Verification ID</span></div></div><p class="hint" style="margin:18px 0 0;font-size:12px">Verify at ${esc(url)}</p></div>
-  <div class="noprint"><button class="btn" data-act="print">Print or save as PDF</button> <a class="btn o" href="#/certs">Back</a></div></div>`}
+  const url=location.origin+"/#/verify/"+code,oid=c.courses?.owner_id;
+  const [st,own]=await Promise.all([q(sb.from("settings").select("key,value").in("key",["cert_signer","cert_title"])),oid?q(sb.from("public_profiles").select("full_name").eq("id",oid)):Promise.resolve([]),loadQR()]);
+  const S=Object.fromEntries(st.map(r=>[r.key,r.value]));certFonts();
+  const svg=certSvg({name:prof?.full_name||me.email.split("@")[0],course:c.courses?.title,date:new Date(c.issued_at).toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"}),code,qr:certQr(url),
+    left:{name:own[0]?.full_name||"softskill Team",title:"Course Instructor"},right:{name:S.cert_signer||"softskill",title:S.cert_title||"Program Director"}});
+  return `<div class="certwrap"><div class="certsvg">${svg}</div><p class="hint noprint" style="text-align:center;margin:14px 0 0">Anyone can verify this certificate at ${esc(url)}</p>
+  <div class="noprint"><button class="btn" data-act="print">${ic("download",15)}Print or save as PDF</button> <a class="btn o" href="#/certs">Back</a></div></div>`}
+
 async function verify(){
   const code=hid();let r={valid:false};try{r=await(await fetch("/api/verify-cert?code="+encodeURIComponent(code))).json()}catch(e){}
   return `<div class="auth" style="margin-top:60px">${r.valid?`<h1>Certificate verified</h1><p><b>${esc(r.name)}</b> completed <b>${esc(r.course)}</b> on ${new Date(r.issued_at).toLocaleDateString("en-PK",{dateStyle:"long"})}.</p><p class="hint">ID ${esc(code)}</p>`:'<h1>Not found</h1><p>We could not find a certificate with this ID.</p>'}</div>`}
@@ -162,11 +166,11 @@ const AX={
   async pjoin(el){const{data,error}=await sb.from("practice_slots").update({guest_id:me.id}).eq("id",el.dataset.id).is("guest_id",null).select("id");
     if(error)return toast(error.message);toast(data.length?"You joined this slot":"Sorry, that seat was just taken");go()},
   async claim(el){el.disabled=true;try{const r=await api("issue-cert",{course_id:el.dataset.id});location.hash="#/cert/"+r.code}catch(e){el.disabled=false;toast(e.message)}},
-  print:()=>window.print(),
+  async print(){try{await document.fonts.ready}catch(e){}window.print()},
   thread:el=>showThread(el.dataset.id),
   async delc(el){const{error}=await sb.from("lesson_comments").delete().eq("id",el.dataset.id);if(error)return toast(error.message);showThread(el.dataset.l)}
 };
 const EXTRA={skills,roleplay,play,coach,journal,practice,certs,cert,verify};
 function install(){Object.assign(H,HX);Object.assign(A,AX);
-  const st=document.createElement("style");st.textContent=`.certwrap{max-width:900px;margin:30px auto;padding:0 12px}.cert{background:#fff;border:10px double #5B4BDB;border-radius:6px;padding:46px 36px;text-align:center;box-shadow:var(--sh)}.cert h1{font-size:clamp(30px,6vw,52px);margin:10px 0}.cert h2{font-size:clamp(20px,4vw,30px);margin:8px 0 26px}.certfoot{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}.certfoot b{display:block}.certfoot span{font-size:12px;color:var(--g)}.noprint{text-align:center;margin-top:20px}@media print{.nav,.foot,.noprint,#toast{display:none!important}body{background:#fff!important}.cert{box-shadow:none}@page{size:A4 landscape;margin:12mm}}`;
+  const st=document.createElement("style");st.textContent=`.certwrap{max-width:1000px;margin:24px auto;padding:0 12px}.certsvg{background:#fff;border-radius:18px;overflow:hidden;box-shadow:var(--sh),0 30px 60px -30px rgba(43,34,102,.4)}.certsvg svg{display:block;width:100%;height:auto}.noprint{text-align:center;margin-top:18px}@media print{*{-webkit-print-color-adjust:exact;print-color-adjust:exact}.nav,.foot,.noprint,#toast{display:none!important}body{background:#fff!important}.certwrap{max-width:none;margin:0;padding:0}.certsvg{box-shadow:none;border-radius:0}@page{size:A4 landscape;margin:0}}`;
   document.head.appendChild(st)}
