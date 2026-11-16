@@ -16,12 +16,27 @@ const same = (a, b) => {
   return x.length === y.length && crypto.timingSafeEqual(x, y);
 };
 
+function keyProblem() {
+  const k = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+  if (k.startsWith('sb_secret_')) return null;
+  if (k.startsWith('sb_publishable_')) return 'it is the publishable key';
+  try {
+    const role = JSON.parse(Buffer.from(k.split('.')[1], 'base64url').toString()).role;
+    return role === 'service_role' ? null : 'it is the "' + role + '" key';
+  } catch (e) { return 'it is not a valid key'; }
+}
+
 // Admin gate: signed in + is_admin in the database + correct ADMIN_CODE. 5 wrong codes lock it for 15 minutes.
 async function admin(req, res) {
   const u = await user(req);
   if (!u) { res.status(401).json({ error: 'Sign in first.' }); return null; }
   const { data: p } = await db.from('profiles').select('is_admin').eq('id', u.id).maybeSingle();
-  if (!p?.is_admin) { res.status(403).json({ error: 'Not allowed.' }); return null; }
+  if (!p?.is_admin) {
+    // A profile that cannot be read at all usually means SUPABASE_SERVICE_ROLE_KEY holds the wrong key (anon / publishable).
+    const bad = keyProblem();
+    if (bad) { res.status(500).json({ error: 'Server key problem: SUPABASE_SERVICE_ROLE_KEY is wrong (' + bad + '). Paste the service_role / secret key from Supabase into Vercel and redeploy.' }); return null; }
+    res.status(403).json({ error: 'Not allowed.' }); return null;
+  }
   const { data: a } = await db.from('admin_attempts').select('*').eq('user_id', u.id).maybeSingle();
   if (a?.locked_until && new Date(a.locked_until) > new Date()) { res.status(429).json({ error: 'Too many wrong codes. Try again in 15 minutes.' }); return null; }
   if (!process.env.ADMIN_CODE || !same(req.headers['x-admin-code'] || '', process.env.ADMIN_CODE)) {
@@ -31,6 +46,18 @@ async function admin(req, res) {
   }
   if (a?.failed) await db.from('admin_attempts').upsert({ user_id: u.id, failed: 0, locked_until: null });
   return u;
+}
+
+// Course tools: an instructor needs no admin code; an admin still does.
+async function staff(req, res) {
+  const u = await user(req);
+  if (!u) { res.status(401).json({ error: 'Sign in first.' }); return null; }
+  const { data: p } = await db.from('profiles').select('is_admin,is_instructor').eq('id', u.id).maybeSingle();
+  if (p?.is_admin) return admin(req, res);
+  if (p?.is_instructor) return u;
+  const bad = p ? null : keyProblem();
+  if (bad) { res.status(500).json({ error: 'Server key problem: SUPABASE_SERVICE_ROLE_KEY is wrong (' + bad + '). Paste the service_role / secret key from Supabase into Vercel and redeploy.' }); return null; }
+  res.status(403).json({ error: 'Not allowed.' }); return null;
 }
 
 // Calls Groq (OpenAI-compatible API) and returns the first JSON object in the reply.
@@ -99,4 +126,4 @@ async function access(uid, cid) {
   return (ps || []).some(p => p.course_id === cid || p.courses?.is_bundle);
 }
 
-module.exports = { db, user, admin, ai, cleanScenario, SK, mail, wrap, esc, SITE, access };
+module.exports = { db, user, admin, staff, ai, cleanScenario, SK, mail, wrap, esc, SITE, access };
