@@ -145,8 +145,10 @@ th,td{padding:10px 12px}
 <dialog id="dlg"><div class="dlg" id="dbody"></div></dialog>
 <div id="toast" class="toast" hidden></div>
 <script src="/icons.js"></script>
+<script src="/cert.js"></script>
 <script src="/skills.js"></script>
 <script src="/lms.js"></script>
+<script src="/teach.js"></script>
 <script>
 const $=s=>document.querySelector(s),main=$("#main"),dlg=$("#dlg");
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -174,7 +176,7 @@ async function boot(){
 addEventListener("hashchange",()=>sb&&go());
 
 function nav(){return `<div class="nav"><a class="logo" href="${me?"#/app":"#/signin"}">soft<span>skill</span></a><nav>`+
- (me?`${prof?.is_admin?'<a href="#/admin">Admin</a>':""}<button class="lnk" data-act="out">${ic("logout",15)}Sign out</button>`:"")+`</nav></div>`}
+ (me?`${(prof?.is_admin||prof?.is_instructor)?'<a href="#/teach">Teach</a>':""}${prof?.is_admin?'<a href="#/admin">Admin</a>':""}<button class="lnk" data-act="out">${ic("logout",15)}Sign out</button>`:"")+`</nav></div>`}
 
 async function go(){
   const h=location.hash.slice(1)||"/";
@@ -209,7 +211,7 @@ function authV(k){
    reset:["New password",`<label>New password (8+ characters)</label><input name="password" type="password" minlength="8" required autocomplete="new-password">`,"Save password",""]}[k];
   return `<div class="split"><div class="brand"><div><span class="eyebrow">softskill</span><h1>Learn it.<br>Lead it.</h1><p>Career skills, live masterclasses and a capstone project, built for students in Pakistan.</p></div><div class="pills"><span>${ic("book",14)} Modules</span><span>${ic("video",14)} Live classes</span><span>${ic("file",14)} Notes</span><span>${ic("link",14)} Links</span></div></div><div class="auth"><h1>${f[0]}</h1><form data-form="${k}">${f[1]}<div class="err" role="alert"></div><button class="btn" style="width:100%;margin-top:14px">${f[2]}</button></form><div style="margin-top:14px">${f[3]}</div><p class="hint" style="margin:18px 0 0;text-align:center;font-size:12.5px"><a href="#/help/terms">Terms</a> · <a href="#/help/privacy">Privacy</a> · <a href="#/help/refund">Refunds</a></p></div></div>`}
 
-const approvedFor=(c,pays)=>prof?.is_admin||c.price==0||pays.some(p=>p.status==="approved"&&(p.course_id===c.id||p.courses?.is_bundle));
+const approvedFor=(c,pays)=>prof?.is_admin||(prof?.is_instructor&&c.owner_id===me.id)||c.price==0||pays.some(p=>p.status==="approved"&&(p.course_id===c.id||p.courses?.is_bundle));
 const stat=s=>s==="approved"?'<span class="tag k">Approved</span>':s==="rejected"?'<span class="tag d">Rejected</span>':'<span class="tag">Pending verification</span>';
 const myPays=()=>q(sb.from("payments").select("*,courses(title,is_bundle)").eq("user_id",me.id).order("created_at",{ascending:false}));
 
@@ -228,28 +230,28 @@ async function dash(){
   </div></div>`}
 
 async function course(id){
-  const [{data:c},ls,pr,pays,X]=await Promise.all([sb.from("courses").select("*").eq("id",id).single(),q(sb.from("lessons").select("*").eq("course_id",id).order("position")),q(sb.from("lesson_progress").select("lesson_id").eq("user_id",me.id)),myPays(),lmsData(id)]);
+  const [{data:c},ls,pr,pays,X,SEC]=await Promise.all([sb.from("courses").select("*").eq("id",id).single(),q(sb.from("lessons").select("*").eq("course_id",id).order("position")),q(sb.from("lesson_progress").select("lesson_id").eq("user_id",me.id)),myPays(),lmsData(id),q(sb.from("sections").select("*").eq("course_id",id).order("position"))]);
   if(!c)return '<div class="load">Course not found.</div>';
   const done=new Set(pr.map(x=>x.lesson_id)),ok=approvedFor(c,pays),mods=ls.filter(l=>l.kind==="module");
   const pct=mods.length?Math.round(mods.filter(m=>done.has(m.id)).length/mods.length*100):0;
-  const list=ls.filter(l=>l.kind===T.c);
-  const open=l=>l.is_free||ok;
+  const list=ls.filter(l=>l.kind===T.c).sort(secSort(SEC));
+  const locked=l=>l.release_at&&new Date(l.release_at)>new Date(),open=l=>(l.is_free||ok)&&!locked(l);
   return `<div class="dash"><aside class="side">${side("app")}</aside><div class="body">
   <div class="banner"><div><span class="eyebrow">Course</span><h1>${esc(c.title)}</h1><p>${esc(c.description)}</p></div></div>
   ${mods.length?`<div class="bar"><i style="width:${pct}%"></i></div><div class="hint">${pct}% of modules complete</div>`:""}
   ${ok?"":`<div class="ok">Some content is locked. <button class="btn s" data-act="unlock" data-id="${id}">${ic("lock",14)}Unlock for ${pkr(c.price)}</button></div>`}
   <div class="tabs" role="tablist">${Object.keys(KIND).map(k=>`<button role="tab" aria-selected="${k===T.c}" data-act="tab" data-v="${k}">${KIND[k][0]} (${ls.filter(l=>l.kind===k).length})</button>`).join("")}</div>
-  ${list.length?list.map(l=>`<div class="item">${l.kind==="module"&&open(l)?`<button class="chk ${done.has(l.id)?"on":""}" data-act="done" data-id="${l.id}" aria-label="Mark complete">${done.has(l.id)?"✓":""}</button>`:""}
+  ${list.length?list.map((l,i)=>`${secHead(l,list[i-1],SEC)}<div class="item">${l.kind==="module"&&open(l)?`<button class="chk ${done.has(l.id)?"on":""}" data-act="done" data-id="${l.id}" aria-label="Mark complete">${done.has(l.id)?"✓":""}</button>`:""}
   <div class="t"><b>${esc(l.title)}</b><span class="hint">${l.kind==="class"?when(l.starts_at):KIND[l.kind][1]}</span></div>
-  <span class="tag ${open(l)?"k":"d"}">${l.is_free&&c.price?"Free preview":open(l)?"Open":"Locked"}</span>
-  ${open(l)?`<button class="btn s" data-act="open" data-id="${l.id}">${ic(l.kind==="class"?"video":l.kind==="note"?"download":l.kind==="link"?"link":"play",14)}${l.kind==="class"?"Join":l.kind==="note"?"Download":l.kind==="link"?"Visit":"Watch"}</button> <button class="btn s o" data-act="thread" data-id="${l.id}">Q&amp;A</button>`:`<button class="btn s o" data-act="unlock" data-id="${id}">${ic("lock",14)}Unlock</button>`}</div>`).join(""):`<div class="empty" style="margin-top:18px">Nothing here yet.</div>`}
+  <span class="tag ${open(l)?"k":"d"}">${l.is_free&&c.price&&!locked(l)?"Free preview":open(l)?"Open":locked(l)?"Opens "+when(l.release_at):"Locked"}</span>
+  ${open(l)?`<button class="btn s" data-act="open" data-id="${l.id}">${ic(l.kind==="class"?"video":l.kind==="note"?"download":l.kind==="link"?"link":"play",14)}${l.kind==="class"?"Join":l.kind==="note"?"Download":l.kind==="link"?"Visit":"Watch"}</button> <button class="btn s o" data-act="thread" data-id="${l.id}">Q&amp;A</button>`:(locked(l)&&ok?"":`<button class="btn s o" data-act="unlock" data-id="${id}">${ic("lock",14)}Unlock</button>`)}</div>`).join(""):`<div class="empty" style="margin-top:18px">Nothing here yet.</div>`}
   ${lmsHtml(X,ok)}
   </div></div>`}
 
 let PLAN=null;
 const AC=()=>sessionStorage.getItem("ac");
 const localDT=t=>{const d=new Date(t);return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,16)};
-const ADM=["admin-unlock","ai-course","ai-live","ai-scenario","ai-quiz","approve-payment","list-students","grant-access","block-user"];
+const ADM=["admin-unlock","ai-course","ai-live","ai-scenario","ai-quiz","approve-payment","list-students","grant-access","block-user","set-role"];
 async function api(path,body,code){
   const t=(await sb.auth.getSession()).data.session?.access_token;
   const adm=ADM.includes(path);
@@ -259,7 +261,7 @@ const rowBtns=(t,id)=>`<button class="btn s o" data-act="edit" data-t="${t}" dat
 const aiCell=p=>p.payment_ai?`<span class="tag ${p.payment_ai.verdict==="pass"?"k":"d"}">AI: ${p.payment_ai.verdict==="pass"?"verified":"needs review"}</span><div class="hint">${esc(p.payment_ai.note)}</div>`:'<span class="hint">Not checked</span>';
 function gate(){return `<div class="auth"><h1>Admin access</h1><p class="hint">Enter the admin code to continue.</p><form data-form="unlock"><label>Admin code</label><input name="code" type="password" required autocomplete="off"><div class="err" role="alert"></div><button class="btn" style="width:100%;margin-top:12px">${ic("lock",14)}Unlock</button></form></div>`}
 const aiBox=cs=>`<div class="ok" style="margin:18px 0"><h3 style="font-size:20px">AI: arrange course content</h3><p class="hint">Paste raw notes, links or a lesson list. AI sorts it into modules, notes and links. You review before anything is saved.</p><form data-form="aicourse"><label>Course</label><select name="course_id">${cs.map(c=>`<option value="${c.id}">${esc(c.title)}</option>`).join("")}</select><label>Raw content</label><textarea name="text" rows="6" required></textarea><div class="err"></div><button class="btn s" style="margin-top:10px">Arrange with AI</button></form><div id="plan"></div></div>`;
-function listC(cs,ls){return `<h3 style="font-size:22px;margin:38px 0 8px">Your courses</h3><div class="scroll"><table><tr><th>Course</th><th>Price</th><th></th></tr>${cs.map(c=>`<tr><td>${esc(c.title)}</td><td>${pkr(c.price)}</td><td>${rowBtns("courses",c.id)}</td></tr>`).join("")}</table></div>
+function listC(cs,ls){return `<h3 style="font-size:22px;margin:38px 0 8px">Your courses</h3><div class="scroll"><table><tr><th>Course</th><th>Price</th><th></th></tr>${cs.map(c=>`<tr><td>${esc(c.title)}</td><td>${pkr(c.price)}</td><td><a class="btn s" href="#/teach/${c.id}">Builder</a> ${rowBtns("courses",c.id)}</td></tr>`).join("")}</table></div>
 <h3 style="font-size:22px;margin:38px 0 8px">Modules, notes and links</h3>${ls.length?`<div class="scroll"><table><tr><th>Title</th><th>Course</th><th>Type</th><th></th></tr>${ls.map(l=>`<tr><td>${esc(l.title)}</td><td>${esc(l.courses?.title)}</td><td>${l.kind}${l.is_free?" · free":""}</td><td>${rowBtns("lessons",l.id)}</td></tr>`).join("")}</table></div>`:'<div class="empty">Nothing added yet.</div>'}`}
 async function live(){
   const [ls,cs,pays]=await Promise.all([q(sb.from("live_classes").select("*").order("starts_at")),q(sb.from("courses").select("*")),myPays()]);
@@ -320,7 +322,7 @@ async function admin(){
     <h3 style="font-size:22px;margin:34px 0 0">Add module, class, note or link</h3><form data-form="addlesson" style="max-width:520px"><label>Course</label><select name="course_id">${opts}</select><div class="two"><div><label>Type</label><select name="kind"><option value="module">Module (video)</option><option value="class">Live class</option><option value="note">Note (PDF)</option><option value="link">Link</option></select></div><div><label>Position</label><input name="position" type="number" value="0"></div></div><label>Title</label><input name="title" required><label>Link (video, Zoom/Meet or website)</label><input name="url" type="url"><label>PDF file (for notes)</label><input name="file" type="file" accept="application/pdf"><label>Class date and time (live classes)</label><input name="starts_at" type="datetime-local"><label><input type="checkbox" name="is_free" style="width:auto"> Free preview</label><div class="err"></div><button class="btn s">Add</button></form>`+listC(cs,all);
   }else{
     const st=Object.fromEntries((await q(sb.from("settings").select("*"))).map(r=>[r.key,r.value]));
-    const F=[["jc_number","JazzCash number"],["jc_title","JazzCash account title"],["ep_number","EasyPaisa number"],["ep_title","EasyPaisa account title"],["raast_id","Raast ID / IBAN"],["ai_auto_approve","AI auto-approve payments (on or off)"]];
+    const F=[["jc_number","JazzCash number"],["jc_title","JazzCash account title"],["ep_number","EasyPaisa number"],["ep_title","EasyPaisa account title"],["raast_id","Raast ID / IBAN"],["ai_auto_approve","AI auto-approve payments (on or off)"],["cert_signer","Certificate: name of the person who signs (e.g. your name)"],["cert_title","Certificate: their title (e.g. Program Director)"]];
     b=`<form data-form="settings" style="max-width:420px">${F.map(([k,l])=>`<label>${l}</label><input name="${k}" value="${esc(st[k])}">`).join("")}<div class="err"></div><button class="btn s" style="margin-top:12px">Save payment details</button></form>`;
   }
   return `<div class="dash"><aside class="side"><a class="on" href="#/admin">${ic("shield")}<span>Admin</span></a><a href="#/app">${ic("cap")}<span>Student view</span></a></aside><div class="body"><h2>Admin</h2>
@@ -367,7 +369,8 @@ const H={
   const r=await sb.from("lesson_secrets").insert({lesson_id:l.id,url:d.get("url")||null,file_path:fp});
   if(r.error)return err(f,r.error.message);toast("Added");go()},
  async unlock(f,d){await api("admin-unlock",{},d.get("code"));sessionStorage.setItem("ac",d.get("code"));go()},
- async aicourse(f,d){const r=await api("ai-course",{text:d.get("text")},AC());PLAN={course_id:d.get("course_id"),items:r.items};
+ async aicourse(f,d){if(prof?.is_admin&&!AC())return err(f,"Open the Admin tab and enter your admin code first.");
+  const r=await api("ai-course",{text:d.get("text")},AC());PLAN={course_id:d.get("course_id"),items:r.items};
   $("#plan").innerHTML=`<p><b>${esc(r.summary)}</b></p>${r.items.map(i=>`<div class="item"><span class="tag">${i.kind}</span><div class="t"><b>${esc(i.title)}</b><span class="hint">${esc(i.url)}</span></div></div>`).join("")}<button class="btn s" data-act="applyplan" style="margin-top:12px">Add ${r.items.length} items to course</button>`;
   f.querySelector("button").disabled=false},
  async ailive(f,d){const r=await api("ai-live",{text:d.get("text")},AC());const g=document.querySelector("[data-form=addlive]").elements;
