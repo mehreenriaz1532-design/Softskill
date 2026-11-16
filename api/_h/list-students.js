@@ -3,7 +3,7 @@ const { admin, db } = require('../_lib');
 module.exports = async (req, res) => {
   if (!(await admin(req, res))) return;
   const [ps, st, cs, ul] = await Promise.all([
-    db.from('profiles').select('id,full_name,city,university,is_admin,created_at').order('created_at', { ascending: false }).limit(1000),
+    db.from('profiles').select('id,full_name,city,university,is_admin,is_instructor,created_at').order('created_at', { ascending: false }).limit(1000),
     db.rpc('admin_student_stats'),
     db.from('courses').select('id,title,price').order('position'),
     db.auth.admin.listUsers({ page: 1, perPage: 1000 })
@@ -16,7 +16,7 @@ module.exports = async (req, res) => {
     courses: cs.data || [],
     students: (ps.data || []).map(p => {
       const u = users[p.id] || {}, s = stats[p.id] || {};
-      return { id: p.id, name: p.full_name, city: p.city, university: p.university, is_admin: p.is_admin, email: u.email || '',
+      return { id: p.id, name: p.full_name, city: p.city, university: p.university, is_admin: p.is_admin, is_instructor: p.is_instructor, email: u.email || '',
         blocked: !!u.banned_until && new Date(u.banned_until) > now, last: u.last_sign_in_at || null,
         modules_done: +s.modules_done || 0, quizzes_passed: +s.quizzes_passed || 0, pitches: +s.pitches || 0, courses: s.courses || [] };
     })
