@@ -1,4 +1,4 @@
-const { db, user, access } = require('./_lib');
+const { db, user, access } = require('../_lib');
 
 // Combined Quiz Endpoint: Handles both starting/resuming a quiz and submitting answers.
 module.exports = async (req, res) => {
