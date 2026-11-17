@@ -1,4 +1,4 @@
-const { db, user } = require('../_lib');
+const { db, user } = require('./_lib');
 // The server replays the student's path through the scenario and computes the scores itself,
 // so the browser cannot invent points. Each skill is capped per scenario and only the best run counts.
 module.exports = async (req, res) => {
