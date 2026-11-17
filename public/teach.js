@@ -1,4 +1,4 @@
-// softskill course builder (instructors and admins): sections, drag-and-drop order, draft/publish, release dates, duplicate.
+// softskills course builder (instructors and admins): sections, drag-and-drop order, draft/publish, release dates, duplicate.
 // Loaded after lms.js; relies on helpers from the other scripts (sb, me, prof, q, esc, when, pkr, api, toast, go, hid, hero, err, safe, localDT, AC, H, A, dlg ...).
 const staffOk=()=>prof?.is_admin||prof?.is_instructor;
 const tshell=inner=>`<div class="dash"><aside class="side"><a href="#/teach" class="on">${ic("cap")}<span>Teach</span></a><a href="#/app">${ic("book")}<span>Student view</span></a></aside><div class="body">${inner}</div></div>`;
