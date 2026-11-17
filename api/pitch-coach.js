@@ -1,4 +1,4 @@
-const { db, user, ai } = require('./_lib');
+const { db, user, ai } = require('../_lib');
 const FILL = /\b(um+|uh+|erm|er|ah|like|you know|basically|actually|i mean|matlab|yani)\b/gi;
 // Student sends typed text or a short voice recording. Voice is transcribed with Groq Whisper,
 // filler words and speaking pace are counted here, and the AI scores clarity, confidence and tone.
