@@ -14,8 +14,8 @@ module.exports = async (req, res) => {
   if (u?.user?.email) {
     const title = esc(p.courses?.title);
     await mail(action === 'approve'
-      ? { to: u.user.email, subject: 'Your payment is approved - softskill', html: wrap('Payment approved', `<p>Your payment for <b>${title}</b> was verified. Your content is now unlocked.</p><p><a href="${SITE()}/#/app">Open softskill</a></p>`) }
-      : { to: u.user.email, subject: 'Your payment needs attention - softskill', html: wrap('Payment not approved', `<p>We could not approve your payment for <b>${title}</b>.</p><p><b>Reason:</b> ${esc(patch.reason)}</p><p>You can submit it again from your dashboard.</p><p><a href="${SITE()}/#/app">Open softskill</a></p>`) });
+      ? { to: u.user.email, subject: 'Your payment is approved - softskills', html: wrap('Payment approved', `<p>Your payment for <b>${title}</b> was verified. Your content is now unlocked.</p><p><a href="${SITE()}/#/app">Open softskills</a></p>`) }
+      : { to: u.user.email, subject: 'Your payment needs attention - softskills', html: wrap('Payment not approved', `<p>We could not approve your payment for <b>${title}</b>.</p><p><b>Reason:</b> ${esc(patch.reason)}</p><p>You can submit it again from your dashboard.</p><p><a href="${SITE()}/#/app">Open softskills</a></p>`) });
   }
   res.json({ ok: true });
 };
