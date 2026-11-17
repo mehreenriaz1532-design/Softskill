@@ -10,8 +10,10 @@ const loaders = {
   'approve-payment': () => require('./_h/approve-payment'),
   'list-students': () => require('./_h/list-students'),
   'grant-access': () => require('./_h/grant-access'),
-  'block-user': () => require('./_h/block-user')
+  'block-user': () => require('./_h/block-user'),
+  'set-role': () => require('./_h/set-role')
 };
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).end();
   const load = loaders[req.body?.action];
