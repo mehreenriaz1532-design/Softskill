@@ -20,6 +20,6 @@ module.exports = async (req, res) => {
   const { error } = await db.from('payments').insert({ user_id, course_id, method: 'Manual', sender_phone: 'admin', tid: 'MANUAL-' + crypto.randomBytes(6).toString('hex'), receipt_path: 'admin', status: 'approved', reason: 'Granted by admin' });
   if (error) return res.status(500).json({ error: error.message });
   const { data: u } = await db.auth.admin.getUserById(user_id);
-  if (u?.user?.email) await mail({ to: u.user.email, subject: 'Course unlocked - softskill', html: wrap('Course unlocked', `<p>You now have access to <b>${esc(c.title)}</b>.</p><p><a href="${SITE()}/#/app">Open softskill</a></p>`) });
+  if (u?.user?.email) await mail({ to: u.user.email, subject: 'Course unlocked - softskills', html: wrap('Course unlocked', `<p>You now have access to <b>${esc(c.title)}</b>.</p><p><a href="${SITE()}/#/app">Open softskills</a></p>`) });
   res.json({ ok: true });
 };
