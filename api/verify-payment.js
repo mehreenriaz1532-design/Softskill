@@ -31,7 +31,7 @@ module.exports = async (req, res) => {
     if (ok && s.ai_auto_approve !== 'off') {
       const { error: e2 } = await db.from('payments').update({ status: 'approved' }).eq('id', id).eq('status', 'pending');
       approved = !e2;
-      if (approved && u.email) await mail({ to: u.email, subject: 'Your payment is approved - softskill', html: wrap('Payment approved', `<p>Your payment for <b>${esc(p.courses.title)}</b> was verified. Your content is now unlocked.</p><p><a href="${SITE()}/#/app">Open softskill</a></p>`) });
+      if (approved && u.email) await mail({ to: u.email, subject: 'Your payment is approved - softskills', html: wrap('Payment approved', `<p>Your payment for <b>${esc(p.courses.title)}</b> was verified. Your content is now unlocked.</p><p><a href="${SITE()}/#/app">Open softskills</a></p>`) });
     }
   } catch (e) { note = 'AI check unavailable. Please review manually.'; }
   await db.from('payment_ai').insert({ payment_id: id, verdict, note });
