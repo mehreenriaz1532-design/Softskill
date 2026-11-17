@@ -1,6 +1,6 @@
 {
-  "name": "softskill",
-  "short_name": "softskill",
+  "name": "softskills",
+  "short_name": "softskills",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#F8F5EF",
