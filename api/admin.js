@@ -13,7 +13,6 @@ const loaders = {
   'block-user': () => require('./_h/block-user'),
   'set-role': () => require('./_h/set-role')
 };
-
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).end();
   const load = loaders[req.body?.action];
