@@ -1,14 +1,14 @@
-// softskill: skills radar, roleplay, pitch coach, journal, practice rooms, certificates, lesson Q&A.
+// softskills: skills radar, roleplay, pitch coach, journal, practice rooms, certificates, lesson Q&A.
 // Loaded before the main script; it relies on helpers (sb, me, prof, q, esc, when, api, toast, H, A ...) defined there.
 const SK=[["communication","Communication","Communication"],["eq","Emotional Intelligence","Emotional IQ"],["leadership","Leadership","Leadership"],["negotiation","Negotiation","Negotiation"],["presence","Executive Presence","Presence"]];
 const SKL=Object.fromEntries(SK.map(([k,l])=>[k,l]));
 const AUTH=["skills","roleplay","play","coach","journal","practice","certs","cert"];
-const SIDE=[["app","My learning","book"],["live","Live classes","video"],["skills","Skills radar","target"],["roleplay","Roleplay","chat"],["coach","Pitch coach","mic"],["journal","Journal","pen"],["practice","Practice rooms","users"],["certs","Certificates","award"],["help","Help","help"]];
-const side=on=>SIDE.map(([r,l,i])=>`<a href="#/${r}" class="${r===on?"on":""}">${ic(i,18)}<span>${l}</span></a>`).join("");
+const SIDE=[["Learn",[["app","Dashboard","home"],["live","Live Classes","video"],["certs","Certificates","award"]]],["Practice",[["skills","My Skills","target"],["roleplay","Role Play","chat"],["coach","Speaking Coach","mic"],["journal","Daily Journal","pen"],["practice","Mock Interviews","users"]]],["Support",[["feedback","Feedback","star"],["help","Help Center","help"]]]];
+const side=on=>SIDE.map(([h,items])=>`<div class="sidehead">${h}</div>`+items.map(([r,l,i])=>`<a href="#/${r}" class="${r===on?"on":""}">${ic(i,18)}<span>${l}</span></a>`).join("")).join("");
 const hid=()=>decodeURIComponent(location.hash.split("/")[2]||"");
 const today=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
 const shell=(on,inner)=>`<div class="dash"><aside class="side">${side(on)}</aside><div class="body">${inner}</div></div>`;
-const hero=(e,t,p)=>`<div class="banner"><div><span class="eyebrow">${e}</span><h1>${t}</h1><p>${p}</p></div></div>`;
+const hero=(e,t,p)=>`<div class="banner hasart"><div><span class="eyebrow">${e}</span><h1>${t}</h1><p>${p}</p></div></div>`;
 const names=async ids=>{ids=[...new Set(ids.filter(Boolean))];return Object.fromEntries((ids.length?await q(sb.from("public_profiles").select("*").in("id",ids)):[]).map(p=>[p.id,p.full_name]))};
 const first=n=>esc((n||"Student").split(" ")[0]);
 
@@ -41,7 +41,7 @@ async function skills(){
   const v=Object.fromEntries(SK.map(([k])=>[k,0]));ev.forEach(e=>v[e.skill]+=e.points);
   v.communication+=Math.max(0,...pa.map(x=>x.clarity))/2;v.presence+=Math.max(0,...pa.map(x=>x.confidence))/2;
   SK.forEach(([k])=>v[k]=Math.min(100,Math.round(v[k])));
-  return shell("skills",hero("Skills","Your soft skills radar","Built from your roleplay scenarios and your best pitch coach scores.")+
+  return shell("skills",hero("My Skills","Your soft skills radar","Built from your roleplay scenarios and your best pitch coach scores.")+
   `<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr));align-items:start"><div class="ok" style="margin:0;text-align:center">${radar(v)}</div>
   <div class="ok" style="margin:0">${SK.map(([k,l])=>`<div class="row" style="margin-top:10px"><b>${l}</b><span class="hint">${v[k]} / 100</span></div><div class="bar" style="max-width:none;margin:6px 0 0"><i style="width:${v[k]}%"></i></div>`).join("")}
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:20px"><a class="btn s" href="#/roleplay">Practise a scenario</a><a class="btn s o" href="#/coach">Pitch coach</a></div></div></div>`)}
@@ -50,7 +50,7 @@ async function skills(){
 let RP=null;
 async function roleplay(){
   const ss=await q(sb.from("scenarios").select("id,title,description,skill").order("created_at"));
-  return shell("roleplay",hero("Roleplay","Workplace simulator","Choose how you respond. Each choice changes the conversation and your skill scores.")+
+  return shell("roleplay",hero("Role Play","Workplace simulator","Choose how you respond. Each choice changes the conversation and your skill scores.")+
   (ss.length?`<div class="grid">${ss.map((s,i)=>`<div class="card"><div class="cover c${i%4}"><span>${String(i+1).padStart(2,"0")}</span></div><span class="tag" style="align-self:flex-start">${SKL[s.skill]||""}</span><h3>${esc(s.title)}</h3><p>${esc(s.description)}</p><div><a class="btn s" href="#/play/${s.id}">Start</a></div></div>`).join("")}</div>`:'<div class="empty">No scenarios yet.</div>'))}
 function rpHtml(){const n=RP.s.data.nodes[RP.cur];
   if(n.end)return `<div class="ok"><h3 style="font-size:22px">Scenario complete</h3><p>${esc(n.text)}</p><div id="rpres" class="hint">Scoring…</div></div>`;
@@ -59,7 +59,7 @@ async function play(){
   const{data:s}=await sb.from("scenarios").select("*").eq("id",hid()).maybeSingle();
   if(!s)return shell("roleplay",'<div class="empty">Scenario not found.</div>');
   RP={s,cur:s.data.start,path:[]};
-  return shell("roleplay",hero("Roleplay",esc(s.title),esc(s.description))+`<div id="rp">${rpHtml()}</div>`)}
+  return shell("roleplay",hero("Role Play",esc(s.title),esc(s.description))+`<div id="rp">${rpHtml()}</div>`)}
 
 /* ---------- pitch coach ---------- */
 let REC=null;
@@ -67,7 +67,7 @@ const pitchCard=a=>`<div class="ok"><div class="row"><b>${when(a.created_at)}</b
 async function coach(){
   const pa=await q(sb.from("pitch_attempts").select("*").eq("user_id",me.id).order("created_at",{ascending:false}).limit(5));
   REC=null;
-  return shell("coach",hero("Pitch coach","Practise your 60-second pitch","Record your voice or type your answer. You get scores for clarity, confidence and tone, a filler word count and tips.")+
+  return shell("coach",hero("Speaking Coach","Practise your 60-second pitch","Record your voice or type your answer. You get scores for clarity, confidence and tone, a filler word count and tips.")+
   `<div class="ok"><form data-form="pitch"><label style="margin-top:0">Your pitch or interview answer</label><textarea name="text" rows="5" placeholder="Type here, or record your voice below"></textarea><div class="row" style="justify-content:flex-start;gap:12px;margin-top:12px"><button type="button" class="btn o s" data-act="rec">Record voice</button><span class="hint" id="rectime"></span></div><div class="err"></div><button class="btn" style="margin-top:12px">Get feedback</button></form></div><div id="pres"></div>
   <h2 style="margin:30px 0 8px">Recent attempts</h2>${pa.length?pa.map(pitchCard).join(""):'<div class="empty">No attempts yet.</div>'}`)}
 
@@ -76,7 +76,7 @@ const CHAL=["Greet three people today by name and with a smile.","Give one perso
 async function journal(){
   const es=await q(sb.from("journal_entries").select("*").eq("user_id",me.id).order("day",{ascending:false}));
   const days=es.map(e=>e.day),st=streakOf(days),done=days.includes(today()),ch=done?es[0].challenge:CHAL[Math.min(es.length,20)];
-  return shell("journal",hero("Journal","21-day soft skill streak","One small challenge a day. Write what happened and what you learned.")+
+  return shell("journal",hero("Daily Journal","21-day soft skill streak","One small challenge a day. Write what happened and what you learned.")+
   `<div class="ok" style="margin-top:0"><div class="row"><b>Day ${Math.min(es.length+(done?0:1),21)} of 21</b><span class="tag k">${st} day streak</span></div>
   <div style="display:flex;gap:6px;flex-wrap:wrap;margin:14px 0">${Array.from({length:21},(_,i)=>`<span style="width:22px;height:22px;border-radius:50%;background:${i<es.length?"#5B4BDB":"#E7E3F6"}"></span>`).join("")}</div>
   ${done?`<p><b>Today's challenge:</b> ${esc(ch)}</p><p class="hint">Done for today. Come back tomorrow to keep your streak.</p>`:`<form data-form="jentry"><p><b>Today's challenge:</b> ${esc(ch)}</p><input type="hidden" name="challenge" value="${esc(ch)}"><label>Your reflection</label><textarea name="note" rows="4" required placeholder="What did you do, and how did it feel?"></textarea><div class="err"></div><button class="btn" style="margin-top:12px">Save reflection</button></form>`}</div>`+
@@ -87,8 +87,8 @@ async function practice(){
   const sl=await q(sb.from("practice_slots").select("*").gte("starts_at",new Date(Date.now()-36e5).toISOString()).order("starts_at"));
   const nm=await names(sl.flatMap(x=>[x.host_id,x.guest_id]));
   const row=x=>{const mine=x.host_id===me.id,inn=mine||x.guest_id===me.id;
-    return `<div class="item"><div class="t"><b>${esc(x.kind)}: ${esc(x.topic)}</b><span class="hint">${when(x.starts_at)} · host ${first(nm[x.host_id])}${x.guest_id?" · partner "+first(nm[x.guest_id]):" · open seat"}</span></div>${inn?`<a class="btn s" target="_blank" rel="noopener" href="https://meet.jit.si/softskill-${x.room}">Open room</a>`:x.guest_id?'<span class="tag d">Full</span>':`<button class="btn s" data-act="pjoin" data-id="${x.id}">Join</button>`}${mine?`<button class="btn s o" data-act="del" data-t="practice_slots" data-id="${x.id}">Cancel</button>`:""}</div>`};
-  return shell("practice",hero("Practice rooms","Peer mock interviews","Book a 15-minute slot or join a classmate. Each slot gets its own free video room.")+
+    return `<div class="item"><div class="t"><b>${esc(x.kind)}: ${esc(x.topic)}</b><span class="hint">${when(x.starts_at)} · host ${first(nm[x.host_id])}${x.guest_id?" · partner "+first(nm[x.guest_id]):" · open seat"}</span></div>${inn?`<a class="btn s" target="_blank" rel="noopener" href="https://meet.jit.si/softskills-${x.room}">Open room</a>`:x.guest_id?'<span class="tag d">Full</span>':`<button class="btn s" data-act="pjoin" data-id="${x.id}">Join</button>`}${mine?`<button class="btn s o" data-act="del" data-t="practice_slots" data-id="${x.id}">Cancel</button>`:""}</div>`};
+  return shell("practice",hero("Mock Interviews","Peer mock interviews","Book a 15-minute slot or join a classmate. Each slot gets its own free video room.")+
   `<div class="ok" style="margin-top:0"><h3 style="font-size:20px">Offer a practice slot</h3><form data-form="pslot"><div class="two"><div><label>Type</label><select name="kind"><option>Mock interview</option><option>Public speaking</option></select></div><div><label>Date and time</label><input name="starts_at" type="datetime-local" required></div></div><label>Topic</label><input name="topic" required maxlength="80" placeholder="e.g. Tell me about yourself"><div class="err"></div><button class="btn s" style="margin-top:12px">Create slot</button></form></div>
   <h2 style="margin:28px 0 4px">Upcoming slots</h2>${sl.length?sl.map(row).join(""):'<div class="empty" style="margin-top:12px">No slots yet. Create the first one.</div>'}`)}
 
@@ -108,7 +108,7 @@ async function cert(){
   const [st,own]=await Promise.all([q(sb.from("settings").select("key,value").in("key",["cert_signer","cert_title"])),oid?q(sb.from("public_profiles").select("full_name").eq("id",oid)):Promise.resolve([]),loadQR()]);
   const S=Object.fromEntries(st.map(r=>[r.key,r.value]));certFonts();
   const svg=certSvg({name:prof?.full_name||me.email.split("@")[0],course:c.courses?.title,date:new Date(c.issued_at).toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"}),code,qr:certQr(url),
-    left:{name:own[0]?.full_name||"softskill Team",title:"Course Instructor"},right:{name:S.cert_signer||"softskill",title:S.cert_title||"Program Director"}});
+    left:{name:own[0]?.full_name||"softskills Team",title:"Course Instructor"},right:{name:S.cert_signer||"softskills",title:S.cert_title||"Program Director"}});
   return `<div class="certwrap"><div class="certsvg">${svg}</div><p class="hint noprint" style="text-align:center;margin:14px 0 0">Anyone can verify this certificate at ${esc(url)}</p>
   <div class="noprint"><button class="btn" data-act="print">${ic("download",15)}Print or save as PDF</button> <a class="btn o" href="#/certs">Back</a></div></div>`}
 
