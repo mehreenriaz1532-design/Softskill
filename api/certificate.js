@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const { db, user } = require('./_lib');
+const { db, user } = require('../_lib');
 
 // ==========================================
 // 1. CERTIFICATE SVG & RENDERING LOGIC (from cert.js)
