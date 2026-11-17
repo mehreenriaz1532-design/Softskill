@@ -1,4 +1,4 @@
-const { db, user, ai, mail, wrap, esc, SITE } = require('./_lib');
+const { db, user, ai, mail, wrap, esc, SITE } = require('../_lib');
 // Called by the student right after submitting a payment. The AI reads the receipt screenshot and checks it
 // against the expected amount, receiving number and transaction ID. Approval is decided by strict rules here,
 // not by the AI alone, and only on a pending payment that belongs to the caller.
