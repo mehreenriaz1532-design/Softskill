@@ -150,12 +150,7 @@ const q=async p=>{const{data,error}=await p;if(error)console.error(error);return
 const toast=m=>{const t=$("#toast");t.textContent=m;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,2600)};
 const ico=n=>`<img class="ico" src="/assets/${n}.svg" alt="" aria-hidden="true">`;
 let sb,me=null,prof=null,T={c:"module",a:"payments"};
-const KIND={
-  module:[`${ico("learn")}Modules`,"Recorded modules"],
-  class:[`${ico("live")}Live classes`,"Live classes"],
-  note:[`${ico("certs")}Notes`,"Notes (PDF)"],
-  link:[`${ico("growth")}Links`,"Useful links"]
-};
+const KIND={module:[`${ico("learn")}Modules`,"Recorded modules"],class:[`${ico("live")}Live classes`,"Live classes"],note:[`${ico("certs")}Notes`,"Notes (PDF)"],link:[`${ico("growth")}Links`,"Useful links"]};
 
 async function boot(){
   try{const c=await(await fetch("/api/config")).json();
