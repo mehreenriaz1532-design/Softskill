@@ -99,6 +99,8 @@ dialog::backdrop{background:rgba(10,10,10,.55);-webkit-backdrop-filter:blur(6px)
 .flogo{display:flex;align-items:center;font-weight:800;font-size:18px;letter-spacing:-.045em}
 .fsmall{font-size:12px;color:#a1a1aa}.fsmall b{color:#fff;font-size:13px;font-weight:700}
 .foot-dev{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.foot .btn.s{padding:6px 14px;font-size:12.5px}
+.ico{width:17px;height:17px;vertical-align:-3px;margin-right:7px;flex:none;display:inline-block}
+.side a.on .ico,.btn:not(.o) .ico,.tag.k .ico{filter:invert(1)}
 @media(max-width:1024px){.dash{grid-template-columns:190px 1fr;gap:14px}.banner{padding:28px}}
 @media(max-width:860px){
 .nav{height:54px;padding:0 8px 0 20px}
@@ -140,14 +142,20 @@ th,td{padding:10px 12px}
 <script src="/skills.js"></script>
 <script>
 const $=s=>document.querySelector(s),main=$("#main"),dlg=$("#dlg");
-const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&","<":"<",">":">",'"':""","'":"'"}[c]));
 const pkr=n=>n?"Rs. "+Number(n).toLocaleString("en-PK"):"Free";
 const when=t=>t?new Date(t).toLocaleString("en-PK",{dateStyle:"medium",timeStyle:"short"}):"Time to be announced";
 const safe=n=>n.replace(/[^\w.-]/g,"_");
 const q=async p=>{const{data,error}=await p;if(error)console.error(error);return data||[]};
 const toast=m=>{const t=$("#toast");t.textContent=m;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,2600)};
+const ico=n=>`<img class="ico" src="/assets/${n}.svg" alt="" aria-hidden="true">`;
 let sb,me=null,prof=null,T={c:"module",a:"payments"};
-const KIND={module:["Modules","Recorded modules"],class:["Live classes","Live classes"],note:["Notes","Notes (PDF)"],link:["Links","Useful links"]};
+const KIND={
+  module:[`${ico("learn")}Modules`,"Recorded modules"],
+  class:[`${ico("live")}Live classes`,"Live classes"],
+  note:[`${ico("certs")}Notes`,"Notes (PDF)"],
+  link:[`${ico("growth")}Links`,"Useful links"]
+};
 
 async function boot(){
   try{const c=await(await fetch("/api/config")).json();
@@ -165,7 +173,7 @@ async function boot(){
 addEventListener("hashchange",()=>sb&&go());
 
 function nav(){return `<div class="nav"><a class="logo" href="${me?"#/app":"#/signin"}">soft<span>skill</span></a><nav>`+
- (me?`${prof?.is_admin?'<a href="#/admin">Admin</a>':""}<button class="lnk" data-act="out">Sign out</button>`:"")+`</nav></div>`}
+ (me?`${prof?.is_admin?`<a href="#/admin">${ico("admin")}Admin</a>`:""}<button class="lnk" data-act="out">${ico("login")}Sign out</button>`:"")+`</nav></div>`}
 
 async function go(){
   const h=location.hash.slice(1)||"/";
@@ -187,7 +195,7 @@ async function landing(){
   <p>A three-stage programme for Pakistani students: career readiness, live masterclasses in digital and AI leadership, and a capstone community project. Free to start.</p>
   <a class="btn" href="#/signup">Create free account</a> <a class="btn o" href="#/signin">Sign in</a></div>
   <div class="three"><div><h3>Foundations</h3><p>CV, LinkedIn, cover letters and interview preparation.</p></div>
-  <div><h3>Masterclasses</h3><p>Live sessions with instructors, recorded replays and Q&amp;A.</p></div>
+  <div><h3>Masterclasses</h3><p>Live sessions with instructors, recorded replays and Q&A.</p></div>
   <div><h3>Capstone</h3><p>Build a community project and earn a certificate.</p></div></div>
   <section><h2>Courses</h2><p class="sub">Free modules open on sign up. Paid content unlocks after payment approval.</p>
   <div class="grid">${cs.map(c=>`<div class="card"><div class="row"><span class="tag ${c.price?"":"k"}">${c.is_bundle?"Bundle":c.price?"Paid":"Free"}</span><b>${pkr(c.price)}</b></div><h3>${esc(c.title)}</h3><p>${esc(c.description)}</p><a class="btn s" href="#/${me?"course/"+c.id:"signup"}" style="align-self:flex-start">${me?"Open":"Join"}</a></div>`).join("")}</div></section></div>`}
@@ -198,7 +206,7 @@ function authV(k){
    signup:["Create account",`<label>Full name</label><input name="name" required><div class="two"><div><label>City</label><input name="city"></div><div><label>University</label><input name="uni"></div></div><label>Email</label><input name="email" type="email" required autocomplete="email"><label>Password (8+ characters)</label><input name="password" type="password" minlength="8" required autocomplete="new-password">`,"Sign up",`<p class="hint">Already have an account? <a href="#/signin">Sign in</a></p>`],
    forgot:["Reset password",`<p class="hint">Enter your email and we will send you a reset link.</p><label>Email</label><input name="email" type="email" required>`,"Send reset link",`<p class="hint"><a href="#/signin">Back to sign in</a></p>`],
    reset:["New password",`<label>New password (8+ characters)</label><input name="password" type="password" minlength="8" required autocomplete="new-password">`,"Save password",""]}[k];
-  return `<div class="split"><div class="brand"><div><span class="eyebrow">softskill</span><h1>Learn it.<br>Lead it.</h1><p>Career skills, live masterclasses and a capstone project, built for students in Pakistan.</p></div><div class="pills"><span>Modules</span><span>Live classes</span><span>Notes</span><span>Links</span></div></div><div class="auth"><h1>${f[0]}</h1><form data-form="${k}">${f[1]}<div class="err" role="alert"></div><button class="btn" style="width:100%;margin-top:14px">${f[2]}</button></form><div style="margin-top:14px">${f[3]}</div></div></div>`}
+  return `<div class="split"><div class="brand"><div><span class="eyebrow">${ico("growth")}softskill</span><h1>Learn it.<br>Lead it.</h1><p>Career skills, live masterclasses and a capstone project, built for students in Pakistan.</p></div><div class="pills"><span>Modules</span><span>Live classes</span><span>Notes</span><span>Links</span></div></div><div class="auth"><h1>${ico("login")}${f[0]}</h1><form data-form="${k}">${f[1]}<div class="err" role="alert"></div><button class="btn" style="width:100%;margin-top:14px">${f[2]}</button></form><div style="margin-top:14px">${f[3]}</div></div></div>`}
 
 const approvedFor=(c,pays)=>prof?.is_admin||c.price==0||pays.some(p=>p.status==="approved"&&(p.course_id===c.id||p.courses?.is_bundle));
 const stat=s=>s==="approved"?'<span class="tag k">Approved</span>':s==="rejected"?'<span class="tag d">Rejected</span>':'<span class="tag">Pending verification</span>';
@@ -209,7 +217,7 @@ async function dash(){
   const [cs,pays]=await Promise.all([q(sb.from("courses").select("*").order("position")),myPays()]);
   const D=await dashExtra(cs,pays,pre);
   return `<div class="dash"><aside class="side">${side("app")}</aside><div class="body">
-  <div class="banner"><div><span class="eyebrow">Welcome back</span><h1>Hello, ${esc((prof?.full_name||me.email.split("@")[0]).split(" ")[0])}</h1><p>Pick a course to see its modules, live classes, notes and links.</p></div><div class="bstats">${D.stats}</div></div>${D.panel}<h2 style="margin-bottom:14px">Your courses</h2>
+  <div class="banner"><div><span class="eyebrow">${ico("dashboard")}Welcome back</span><h1>Hello, ${esc((prof?.full_name||me.email.split("@")[0]).split(" ")[0])}</h1><p>Pick a course to see its modules, live classes, notes and links.</p></div><div class="bstats">${D.stats}</div></div>${D.panel}<h2 style="margin-bottom:14px">Your courses</h2>
   <div class="grid">${cs.map((c,i)=>{const ok=approvedFor(c,pays);return `<div class="card"><div class="cover c${i%3}"><span>${String(i+1).padStart(2,"0")}</span></div><div class="row"><span class="tag ${ok?"k":"d"}">${ok?(c.price?"Unlocked":"Free"):"Locked"}</span><b>${pkr(c.price)}</b></div><h3>${esc(c.title)}</h3><p>${esc(c.description)}</p>
   <div><a class="btn s" href="#/course/${c.id}">Open</a> ${ok?"":`<button class="btn s o" data-act="unlock" data-id="${c.id}">Unlock</button>`}</div></div>`}).join("")}</div>
   <h2 style="margin-top:44px">Payments</h2><p class="sub">Approved payments unlock content automatically.</p>
@@ -226,14 +234,14 @@ async function course(id){
   const list=ls.filter(l=>l.kind===T.c);
   const open=l=>l.is_free||ok;
   return `<div class="dash"><aside class="side">${side("app")}</aside><div class="body">
-  <div class="banner"><div><span class="eyebrow">Course</span><h1>${esc(c.title)}</h1><p>${esc(c.description)}</p></div></div>
+  <div class="banner"><div><span class="eyebrow">${ico("learn")}Course</span><h1>${esc(c.title)}</h1><p>${esc(c.description)}</p></div></div>
   ${mods.length?`<div class="bar"><i style="width:${pct}%"></i></div><div class="hint">${pct}% of modules complete</div>`:""}
   ${ok?"":`<div class="ok">Some content is locked. <button class="btn s" data-act="unlock" data-id="${id}">Unlock for ${pkr(c.price)}</button></div>`}
   <div class="tabs" role="tablist">${Object.keys(KIND).map(k=>`<button role="tab" aria-selected="${k===T.c}" data-act="tab" data-v="${k}">${KIND[k][0]} (${ls.filter(l=>l.kind===k).length})</button>`).join("")}</div>
   ${list.length?list.map(l=>`<div class="item">${l.kind==="module"&&open(l)?`<button class="chk ${done.has(l.id)?"on":""}" data-act="done" data-id="${l.id}" aria-label="Mark complete">${done.has(l.id)?"✓":""}</button>`:""}
   <div class="t"><b>${esc(l.title)}</b><span class="hint">${l.kind==="class"?when(l.starts_at):KIND[l.kind][1]}</span></div>
   <span class="tag ${open(l)?"k":"d"}">${l.is_free&&c.price?"Free preview":open(l)?"Open":"Locked"}</span>
-  ${open(l)?`<button class="btn s" data-act="open" data-id="${l.id}">${l.kind==="class"?"Join":l.kind==="note"?"Download":l.kind==="link"?"Visit":"Watch"}</button> <button class="btn s o" data-act="thread" data-id="${l.id}">Q&amp;A</button>`:`<button class="btn s o" data-act="unlock" data-id="${id}">Unlock</button>`}</div>`).join(""):`<div class="empty" style="margin-top:18px">Nothing here yet.</div>`}
+  ${open(l)?`<button class="btn s" data-act="open" data-id="${l.id}">${l.kind==="class"?"Join":l.kind==="note"?"Download":l.kind==="link"?"Visit":"Watch"}</button> <button class="btn s o" data-act="thread" data-id="${l.id}">Q&A</button>`:`<button class="btn s o" data-act="unlock" data-id="${id}">Unlock</button>`}</div>`).join(""):`<div class="empty" style="margin-top:18px">Nothing here yet.</div>`}
   </div></div>`}
 
 let PLAN=null;
@@ -245,7 +253,7 @@ async function api(path,body,code){
   const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||"Request failed");return j}
 const rowBtns=(t,id)=>`<button class="btn s o" data-act="edit" data-t="${t}" data-id="${id}">Edit</button> <button class="btn s o" data-act="del" data-t="${t}" data-id="${id}">Delete</button>`;
 const aiCell=p=>p.payment_ai?`<span class="tag ${p.payment_ai.verdict==="pass"?"k":"d"}">AI: ${p.payment_ai.verdict==="pass"?"verified":"needs review"}</span><div class="hint">${esc(p.payment_ai.note)}</div>`:'<span class="hint">Not checked</span>';
-function gate(){return `<div class="auth"><h1>Admin access</h1><p class="hint">Enter the admin code to continue.</p><form data-form="unlock"><label>Admin code</label><input name="code" type="password" required autocomplete="off"><div class="err" role="alert"></div><button class="btn" style="width:100%;margin-top:12px">Unlock</button></form></div>`}
+function gate(){return `<div class="auth"><h1>${ico("admin")}Admin access</h1><p class="hint">Enter the admin code to continue.</p><form data-form="unlock"><label>Admin code</label><input name="code" type="password" required autocomplete="off"><div class="err" role="alert"></div><button class="btn" style="width:100%;margin-top:12px">Unlock</button></form></div>`}
 const aiBox=cs=>`<div class="ok" style="margin:18px 0"><h3 style="font-size:20px">AI: arrange course content</h3><p class="hint">Paste raw notes, links or a lesson list. AI sorts it into modules, notes and links. You review before anything is saved.</p><form data-form="aicourse"><label>Course</label><select name="course_id">${cs.map(c=>`<option value="${c.id}">${esc(c.title)}</option>`).join("")}</select><label>Raw content</label><textarea name="text" rows="6" required></textarea><div class="err"></div><button class="btn s" style="margin-top:10px">Arrange with AI</button></form><div id="plan"></div></div>`;
 function listC(cs,ls){return `<h3 style="font-size:22px;margin:38px 0 8px">Your courses</h3><div class="scroll"><table><tr><th>Course</th><th>Price</th><th></th></tr>${cs.map(c=>`<tr><td>${esc(c.title)}</td><td>${pkr(c.price)}</td><td>${rowBtns("courses",c.id)}</td></tr>`).join("")}</table></div>
 <h3 style="font-size:22px;margin:38px 0 8px">Modules, notes and links</h3>${ls.length?`<div class="scroll"><table><tr><th>Title</th><th>Course</th><th>Type</th><th></th></tr>${ls.map(l=>`<tr><td>${esc(l.title)}</td><td>${esc(l.courses?.title)}</td><td>${l.kind}${l.is_free?" · free":""}</td><td>${rowBtns("lessons",l.id)}</td></tr>`).join("")}</table></div>`:'<div class="empty">Nothing added yet.</div>'}`}
@@ -254,7 +262,7 @@ async function live(){
   const cm=Object.fromEntries(cs.map(c=>[c.id,c])),cut=Date.now()-72e5;
   const row=l=>{const c=cm[l.course_id],ok=!c||approvedFor(c,pays);return `<div class="item"><div class="t"><b>${esc(l.title)}</b><span class="hint">${when(l.starts_at)} · ${c?esc(c.title)+" students":"Open to everyone"}</span>${l.description?`<div class="hint">${esc(l.description)}</div>`:""}</div>${ok?`<button class="btn s" data-act="join" data-id="${l.id}">Join</button>`:`<button class="btn s o" data-act="unlock" data-id="${c.id}">Unlock</button>`}</div>`};
   const up=ls.filter(l=>new Date(l.starts_at)>=cut),old=ls.filter(l=>new Date(l.starts_at)<cut).reverse();
-  return `<div class="dash"><aside class="side">${side("live")}</aside><div class="body"><h2>Live classes</h2><p class="sub">Times are shown in your device time zone.</p>
+  return `<div class="dash"><aside class="side">${side("live")}</aside><div class="body"><h2>${ico("live")}Live classes</h2><p class="sub">Times are shown in your device time zone.</p>
   <h3 style="font-size:20px">Upcoming</h3>${up.length?up.map(row).join(""):'<div class="empty">No upcoming classes yet.</div>'}
   ${old.length?`<h3 style="font-size:20px;margin-top:34px">Earlier</h3>${old.map(row).join("")}`:""}</div></div>`}
 const EF={courses:[["title","Title"],["description","Description","ta"],["price","Price (PKR)","num"],["position","Position","num"],["is_bundle","Bundle: unlocks every course","chk"]],
@@ -303,7 +311,7 @@ async function admin(){
     const F=[["jc_number","JazzCash number"],["jc_title","JazzCash account title"],["ep_number","EasyPaisa number"],["ep_title","EasyPaisa account title"],["raast_id","Raast ID / IBAN"],["ai_auto_approve","AI auto-approve payments (on or off)"]];
     b=`<form data-form="settings" style="max-width:420px">${F.map(([k,l])=>`<label>${l}</label><input name="${k}" value="${esc(st[k])}">`).join("")}<div class="err"></div><button class="btn s" style="margin-top:12px">Save payment details</button></form>`;
   }
-  return `<div class="dash"><aside class="side"><a class="on" href="#/admin">Admin</a><a href="#/app">Student view</a></aside><div class="body"><h2>Admin</h2>
+  return `<div class="dash"><aside class="side"><a class="on" href="#/admin">${ico("admin")}Admin</a><a href="#/app">${ico("dashboard")}Student view</a></aside><div class="body"><h2>${ico("admin")}Admin</h2>
   <div class="tabs">${tabs.map(t=>`<button aria-selected="${t===T.a}" data-act="atab" data-v="${t}">${{payments:"Payments",live:"Live classes",content:"Courses & content",roleplay:"Roleplay",settings:"Settings"}[t]}</button>`).join("")}</div>${b}</div></div>`}
 
 async function checkout(id){
