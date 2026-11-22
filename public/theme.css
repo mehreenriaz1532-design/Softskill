@@ -1,0 +1,111 @@
+/* softskills: "Royal Obsidian & Gold" dark glass theme.
+   Loaded after the page styles. The "html body" prefix lets it win over styles that the scripts add later. */
+:root{--bg:#0C0A12;--s:#1A1626;--k:#F5F3FA;--g:#B7B1CF;--l:rgba(255,255,255,.12);
+ --glass:rgba(255,255,255,.07);--edge:rgba(255,255,255,.16);
+ --gold:#FBBF24;--gold2:#F59E0B;--goldsoft:#FFE08A;
+ --brand:#FBBF24;--brand2:#F59E0B;--brand-soft:rgba(251,191,36,.14);
+ --sh:0 24px 60px -28px rgba(0,0,0,.75);--blur:blur(18px) saturate(1.45)}
+html{color-scheme:dark;background:#0C0A12;scrollbar-color:rgba(255,255,255,.28) transparent}
+html body{background:none;color:var(--k)}
+::selection{background:rgba(251,191,36,.35)}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.22);border-radius:99px}
+
+/* background layers (made by bg.js) */
+.bgwrap{position:fixed;inset:0;z-index:-1;overflow:hidden;background:#0C0A12}
+.bgl{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity .8s ease}
+.bgl.on{opacity:1}
+.bgveil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,10,18,calc(var(--veil,.6) - .12)),rgba(12,10,18,var(--veil,.6)))}
+.bgvig{position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 25%,transparent 45%,rgba(0,0,0,.5))}
+
+/* glass panels (blurred: only the big, few ones) */
+html body .nav,html body .side,html body .banner,html body .auth,html body .brand,html body .ok,html body .card,html body .scroll,html body .page,html body .secbox,html body .foot,html body .stats div,html body .bstats div{
+ background:var(--glass);border:1px solid var(--edge);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);box-shadow:var(--sh);color:var(--k)}
+html body .nav{background:rgba(16,13,24,.55)}
+html body .foot{background:rgba(16,13,24,.55)}
+html body .side{background:rgba(16,13,24,.45)}
+html body .auth{background:rgba(16,13,24,.58)}
+/* repeated rows: translucent only (no blur), so long lists stay smooth */
+html body .item,html body .lrow,html body .acct,html body details{background:rgba(255,255,255,.07);border:1px solid var(--edge);box-shadow:none;color:var(--k)}
+html body .empty{background:rgba(255,255,255,.04);border:1.5px dashed rgba(255,255,255,.26);color:var(--g)}
+html body .card:hover{border-color:rgba(251,191,36,.5);box-shadow:0 22px 50px -24px rgba(251,191,36,.35)}
+
+/* top bar, side menu */
+html body .nav a,html body .nav button.lnk{color:#E4E0F2}
+html body .nav nav a:hover{background:rgba(255,255,255,.12);color:#fff}
+html body .nav button.lnk{background:var(--gold)!important;color:#1A1200!important}
+html body .nav .logo span,html body .flogo span{color:var(--goldsoft)}
+html body .side a{color:#D9D4EC}
+html body .side a:hover{background:rgba(255,255,255,.08)}
+html body .side a.on{background:linear-gradient(135deg,rgba(251,191,36,.30),rgba(245,158,11,.12));color:#FFE08A;box-shadow:inset 0 0 0 1px rgba(251,191,36,.42)}
+html body .sidehead{color:#9C96B6}
+
+/* banners */
+html body .banner{background:linear-gradient(135deg,rgba(255,255,255,.14),rgba(255,255,255,.04)),radial-gradient(110% 150% at 0% 0%,rgba(251,191,36,.22),transparent 55%)}
+html body .banner:after{background:radial-gradient(circle at 30% 30%,rgba(251,191,36,.38),rgba(251,191,36,0) 68%);border:0}
+html body .banner p,html body .brand p{color:#D3CEE6}
+html body .eyebrow{background:rgba(251,191,36,.14);border:1px solid rgba(251,191,36,.42);color:#FFE08A}
+html body .bstats div{background:rgba(255,255,255,.08)}
+html body .bstats span{color:#D3CEE6}
+
+/* sign in / sign up */
+html body .brand{background:linear-gradient(160deg,rgba(255,255,255,.12),rgba(255,255,255,.03)),rgba(10,8,16,.38);color:#fff}
+html body .brand:before,html body .brand:after{display:none}
+html body .pills span{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.22);color:#fff}
+
+/* buttons, tags, tabs */
+html body .btn{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1A1200;border:1px solid rgba(255,224,138,.6);box-shadow:0 10px 24px -10px rgba(251,191,36,.55)}
+html body .btn:hover{box-shadow:0 14px 30px -10px rgba(251,191,36,.7)}
+html body .btn.o{background:rgba(255,255,255,.08);color:var(--k);border:1px solid var(--edge);box-shadow:none}
+html body .btn.o:hover{border-color:var(--gold);color:var(--goldsoft)}
+html body .tag{background:rgba(255,255,255,.10);border:1px solid var(--edge);color:var(--k)}
+html body .tag.k{background:rgba(251,191,36,.18);border-color:rgba(251,191,36,.5);color:#FFE08A}
+html body .tag.d{background:rgba(255,255,255,.05);color:var(--g)}
+html body .tabs{background:rgba(255,255,255,.08);border:1px solid var(--edge)}
+html body .tabs button{color:#C9C3DF}
+html body .tabs button[aria-selected=true]{background:rgba(255,255,255,.16);color:#FFE08A;box-shadow:none}
+
+/* forms */
+html body input,html body select,html body textarea{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2);color:var(--k)}
+html body input:focus,html body select:focus,html body textarea:focus{border-color:var(--gold);box-shadow:0 0 0 4px rgba(251,191,36,.18);background:rgba(255,255,255,.1)}
+::placeholder{color:#8F89A8}
+select option{background:#1A1626;color:#F5F3FA}
+html body input[type=checkbox]{accent-color:var(--gold)}
+html body .err{color:#FF9AA2}
+html body label{color:#E4E0F2}
+
+/* progress, ticks, tables, stats, dialogs */
+html body .bar{background:rgba(255,255,255,.14)}
+html body .bar i{background:linear-gradient(90deg,var(--gold),#FF7A59)}
+html body .chk{background:transparent;border-color:rgba(255,255,255,.5)}
+html body .chk.on{background:var(--gold);border-color:var(--gold);color:#1A1200}
+html body th{background:rgba(255,255,255,.06);color:var(--g)}
+html body td,html body th{border-color:rgba(255,255,255,.09)}
+html body tbody tr:hover td{background:rgba(255,255,255,.05)}
+html body .stats b{color:var(--k)}
+html body dialog{background:rgba(22,19,34,.94);color:var(--k);border:1px solid var(--edge)}
+html body dialog::backdrop{background:rgba(5,4,10,.66)}
+html body .toast{background:#F5F3FA;color:#16132B}
+html body .qtimer{background:rgba(16,13,24,.85);border:1px solid rgba(251,191,36,.5);color:#FFE08A}
+html body .qtimer.low{background:#B42318;border-color:#FF9AA2;color:#fff}
+html body .star{color:rgba(255,255,255,.25)}html body .star.on{color:var(--gold)}
+html body .starpick label{color:rgba(255,255,255,.28)}
+html body .starpick input:checked~label,html body .starpick label:hover,html body .starpick label:hover~label{color:var(--gold)}
+html body .rate{color:#FFD76A}
+
+/* footer, policy pages, small text */
+html body .fsmall{color:#B7B1CF}html body .fsmall b,html body .foot a.fsmall b{color:#fff}
+html body .page p,html body .page li{color:#CFCAE3}
+html body .hint a{color:#FFD76A}
+html body details summary{color:var(--k)}
+/* colours written inside the page text itself */
+[style*="color:#3f3f46"]{color:var(--g)!important}
+[style*="color:#b42318"]{color:#FF9AA2!important}
+
+/* the certificate stays white paper on the dark page */
+html body .certsvg{background:#fff;border:0}
+@media print{html,html body{background:#fff!important}.bgwrap{display:none}html body .certsvg{box-shadow:none}}
+
+/* slow phones / data saver: no blur, a bit more solid */
+html.lite body .nav,html.lite body .side,html.lite body .banner,html.lite body .auth,html.lite body .brand,html.lite body .ok,html.lite body .card,html.lite body .scroll,html.lite body .page,html.lite body .secbox,html.lite body .foot,html.lite body .stats div,html.lite body .bstats div{
+ -webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(24,20,36,.86)}
+@media(prefers-reduced-motion:reduce){.bgl{transition:none}}
